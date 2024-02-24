@@ -7,8 +7,8 @@ from tqdm import tqdm
 COUNTRY = "fr"
 API_ID = "37fe08af"
 API_KEY = "17c1369ea8fb68bc48f834aebc0bec53"
-RESULTS_PER_PAGE = 5
-PAGE_SCRAPED = 10
+RESULTS_PER_PAGE = 25
+PAGE_SCRAPED = 100
 QUERY_PARAMETERS = "&title_only="
 KEYWORDS = "data%20engineer"
 MAX_OLD_DAYS = str(30)
@@ -37,7 +37,7 @@ def scrape_urls(url):
     if the status code is incorrect, the exact status code and the url are 
     displayed
     """
-    response = requests.get(url, timeout=1)
+    response = requests.get(url, timeout=500)
     if response.status_code == 200:
         return response.json()
     print("The request for {} was not successful : status {}"
@@ -143,7 +143,7 @@ def final_step(jobs_offers):
     jobs_ready_for_export = []
     for offer in jobs_offers:
         nb_offers_on_page = 0
-        while nb_offers_on_page < RESULTS_PER_PAGE:
+        while nb_offers_on_page < len(offer["results"]):
             getjoboffer = GetJobOffer(offer["results"][nb_offers_on_page])
             jobs_ready_for_export.append(getjoboffer.combine_job_company())
             nb_offers_on_page += 1
