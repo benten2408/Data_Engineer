@@ -4,52 +4,51 @@ from tqdm import tqdm
 
 # STEP 0 - setting Environment Variables
 
-country = "fr"
-api_id = "37fe08af"
-api_key = "17c1369ea8fb68bc48f834aebc0bec53"
-results_per_page = 25
-page_scraped = 100
-what_and = "data%20engineer"
-max_days_old = str(30)
+COUNTRY = "fr"
+API_ID = "37fe08af"
+API_KEY = "17c1369ea8fb68bc48f834aebc0bec53"
+RESULTS_PER_PAGE = 5
+PAGE_SCRAPED = 10
+QUERY_PARAMETERS = "&title_only="
+KEYWORDS = "data%20engineer"
+MAX_OLD_DAYS = str(30)
 
-# ETAPE 1 connexion à l'API + récupération offres
+# STEP 1 urls creation
 
 
-def create_url(start_url="http://api.adzuna.com/v1/api/jobs/"):
+def create_url():
     """
-    concactène l'adresse url à partir des paramètres choisis
-    comment améliorer pour que les paramètres soient correctement passés ?
+    strings together search parameters set in STEP 0
     """
     url_list = []
-    for page_number in range(1, page_scraped):
-        part0_url = "/search/"
+    for page_number in range(1, PAGE_SCRAPED):
         number_page = str(page_number) 
-        part1_url = "?app_id="
-        part2_url = "&app_key="
-        part3_url = "&results_per_page="
-        offers_per_page = str(results_per_page)
-        part4_url = "&what_and="
-        part5_url = "&max_days_old="
-        end_url = "&content-type=application/json"
-        full_url = f"{start_url}{country}{part0_url}{number_page}{part1_url}{api_id}{part2_url}{api_key}{part3_url}{offers_per_page}{part4_url}{what_and}{part5_url}{max_days_old}{end_url}"
+        offers_per_page = str(RESULTS_PER_PAGE)
+        full_url = f"http://api.adzuna.com/v1/api/jobs/{COUNTRY}/search/{number_page}?app_id={API_ID}&app_key={API_KEY}&results_per_page={offers_per_page}{QUERY_PARAMETERS}{KEYWORDS}&max_days_old={MAX_OLD_DAYS}&content-type=application/json"
         url_list.append(full_url)
     return url_list
+
+# STEP 2 connection to API Adzuna
 
 
 def scrape_urls(url):
     """
-    lance la requête sur l'api Adzuna pour chacunes des url crééés
-    si le status_code est incorrect, il s'affiche et l'url liée s'affiche
+    each url created is requested from Adzuna API
+    if the status code is incorrect, the exact status code and the url are 
+    displayed
     """
-    response = requests.get(url)
+    response = requests.get(url, timeout=1)
     if response.status_code == 200:
         return response.json()
-    else:
-        print("The request for {} was not successful : status {}".format(url, response.status_code))
-        return None
+    print("The request for {} was not successful : status {}"
+          .format(url, response.status_code))
+    return None
 
 
 class Company:
+    """
+    doc to write
+    """
     def __init__(self):
         self.name = None
         self.sector = None
@@ -60,6 +59,9 @@ class Company:
 
 
 class JobOffer:
+    """
+    doc to write
+    """
     def __init__(self):
         self.title = None
         self.company = None
@@ -77,12 +79,18 @@ class JobOffer:
       
 
 class GetJobOffer():
+    """
+    doc to write
+    """
     def __init__(self, full_info):
         self.full_info = full_info
         self.job_offer = JobOffer()
         self.company = Company()
 
     def get_job_details(self):
+        """
+        doc to write
+        """
         results = self.full_info
         self.job_offer.title = results["title"] if "title" in results else None
         self.job_offer.location = results["location"]["display_name"] if \
@@ -107,6 +115,9 @@ class GetJobOffer():
             "redirect_url" in results else None
 
     def get_company_details(self):
+        """
+        doc to write
+        """
         results = self.full_info
         if "category" in results:
             self.company.sector = results["category"]["tag"]
@@ -117,20 +128,26 @@ class GetJobOffer():
                 self.company.name = results['company']["name"]
 
     def combine_job_company(self):
+        """
+        doc to write
+        """
         self.get_company_details()
         self.get_job_details()
         return vars(self.job_offer)
 
 
 def final_step(jobs_offers):
+    """
+    doc to write
+    """
     jobs_ready_for_export = []
     for offer in jobs_offers:
         nb_offers_on_page = 0
-        while nb_offers_on_page < results_per_page:
+        while nb_offers_on_page < RESULTS_PER_PAGE:
             getjoboffer = GetJobOffer(offer["results"][nb_offers_on_page])
             jobs_ready_for_export.append(getjoboffer.combine_job_company())
             nb_offers_on_page += 1
-    return jobs_ready_for_export    
+    return jobs_ready_for_export
 
 
 url_list = create_url()
