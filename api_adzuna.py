@@ -85,9 +85,6 @@ def scrape_url(url):
           status {response.raise_for_status()}")
 
 
-# STEP 3 - creating the objects containing the relevant information
-
-
 class Company:
     """
     A class used to represent a company
@@ -291,7 +288,8 @@ def combing_each_offer(jobs_offers):
 
 if __name__ == "__main__":
     """
-    initiating the script
+    initiating the script that eventually saves a csv file in the output
+    directory with the full DataFrame
 
     Parameters
     ----------
@@ -299,7 +297,7 @@ if __name__ == "__main__":
 
     Returns
     ----------
-    a csv file is created in the output directory with the full DataFrame
+    N/A
     """
     url_list = create_url()
     jobs_offers = [scrape_url(url) for url in tqdm(url_list,
