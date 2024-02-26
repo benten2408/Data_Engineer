@@ -305,4 +305,4 @@ if __name__ == "__main__":
     jobs_ready_for_export = combing_each_offer(jobs_offers)
     df_adzuna_jobs = pd.DataFrame(jobs_ready_for_export)
     df_adzuna_jobs["source"] = ["adzuna_api"]*df_adzuna_jobs.shape[0]
-    df_adzuna_jobs.to_csv('output/job_offers_adzuna.csv', index=False)
+    df_adzuna_jobs.to_csv('output_adzuna/job_offers_adzuna.csv', index=False)
