@@ -1,4 +1,4 @@
-﻿title,company,contract_type,location,salary,remote_type,debut_date,require_experience,education,description,profil_experience,publication_date,url_direct_offer,source
+﻿title,company,contract_type,location,salary,remote_type,starting_date,require_experience,education,description,profil_experience,publication_date,url_direct_offer,source
 Consultant.e Data Engineer Expérimenté.e,"{'name': 'THE INFORMATION LAB', 'sector': 'Logiciels, IT / Digital, Big Data', 'employees': '38 collaborateurs', 'creation_year': '2015', 'turnover': '5M€', 'mean_age': None}",CDI,Paris,45K à 60K €,Télétravail fréquent,,,,"Descriptif du poste
 Qui sommes-nous ?
 Véritables passionnés de data, nous avons construit The Information Lab autour des solutions Tableau, Alteryx et Snowflake. Nous sommes convaincus que ce sont les meilleures technologies pour accomplir la transformation digitale de nos clients.
