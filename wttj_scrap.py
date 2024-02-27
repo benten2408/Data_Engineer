@@ -231,7 +231,7 @@ if __name__ == "__main__":
 
     # links = get_all_page_links(url=wttj_url, nb_pages=11)
 
-    links = pd.read_csv("output/jobs_links.csv")["link"].to_list()
+    links = pd.read_csv("output/jobs_links_wttj.csv")["link"].to_list()
 
     job_offers = Parallel(n_jobs=4)(
         delayed(scrape_job)(link)

@@ -26,6 +26,8 @@ import pandas as pd
 import requests
 from tqdm import tqdm
 
+from datastruct import Company, JobOffer
+
 COUNTRY = "fr"
 API_ID = "37fe08af"
 API_KEY = "17c1369ea8fb68bc48f834aebc0bec53"
@@ -83,67 +85,6 @@ def scrape_url(url):
         return response.json()
     raise HTTPError(f"The request for {url} was not successful : \
           status {response.raise_for_status()}")
-
-
-class Company:
-    """
-    A class used to represent a company
-
-    Attributes
-    ----------
-    matching the ones collected from the wwtj scraping
-    name : str
-    sector : str
-    employees : int
-    creation_year : int
-    turnover : int
-    mean_age : int
-    """
-    def __init__(self):
-        self.name = None
-        self.sector = None
-        self.employees = None
-        self.creation_year = None
-        self.turnover = None
-        self.mean_age = None
-
-
-class JobOffer:
-    """
-    A class used to represent a job offer
-
-    Attributes
-    ----------
-    matching the ones collected from the wwtj scraping
-    title : str
-    company : str
-    contract_type : str
-    location : str
-    salary : int
-    remote_type : str
-    starting_date : str
-    required_experience : str
-    education : str
-    description : str
-    profil_experience : str
-    publication_date : str
-    url_direct_offer : str
-
-    """
-    def __init__(self):
-        self.title = None
-        self.company = None
-        self.contract_type = None
-        self.location = None
-        self.salary = None
-        self.remote_type = None
-        self.starting_date = None
-        self.required_experience = None
-        self.education = None
-        self.description = None
-        self.profil_experience = None
-        self.publication_date = None
-        self.url_direct_offer = None
 
 
 class GetJobOffer():
@@ -300,9 +241,9 @@ if __name__ == "__main__":
     N/A
     """
     url_list = create_url()
-    jobs_offers = [scrape_url(url) for url in tqdm(url_list,
+    jobs_offers = [scrape_url(url) for url in tqdm(url_list[:1],
                                                    desc="Accessing API")]
     jobs_ready_for_export = combing_each_offer(jobs_offers)
     df_adzuna_jobs = pd.DataFrame(jobs_ready_for_export)
     df_adzuna_jobs["source"] = ["adzuna_api"]*df_adzuna_jobs.shape[0]
-    df_adzuna_jobs.to_csv('output_adzuna/job_offers_adzuna.csv', index=False)
+    df_adzuna_jobs.to_csv('output/job_offers_adzuna.csv', index=False)
