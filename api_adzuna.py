@@ -22,7 +22,7 @@ functions:
     * main - the main function of the script
 """
 
-from python-decouple import config
+from decouple import config
 from httpx import HTTPError
 import pandas as pd
 import requests
@@ -55,8 +55,11 @@ def create_url():
     """
     url_list = []
     for page_number in range(1, PAGE_SCRAPED):
+        print(f"page_number: {page_number} and PAGE_SCRAPED {PAGE_SCRAPED}\n")
         number_page = str(page_number)
         full_url = f"http://api.adzuna.com/v1/api/jobs/{COUNTRY}/search/{number_page}?app_id={API_ID}&app_key={API_KEY}&results_per_page={RESULTS_PER_PAGE}{QUERY_PARAMETERS}{KEYWORDS}&max_days_old={MAX_OLD_DAYS}&content-type=application/json"
+        #page_number += 1
+        print(f"full_url {full_url} \n")
         url_list.append(full_url)
     return url_list
 
@@ -232,7 +235,8 @@ def combing_each_offer(jobs_offers):
 if __name__ == "__main__":
     """
     initiating the script that eventually saves a csv file in the output
-    directory with the full DataFrame
+    directory with the full DataFrame of job offers as well as a csv file
+    of the entire list of url scraped
 
     Parameters
     ----------
@@ -243,7 +247,8 @@ if __name__ == "__main__":
     N/A
     """
     url_list = create_url()
-    jobs_offers = [scrape_url(url) for url in tqdm(url_list[:1],
+    pd.DataFrame(url_list).to_csv('output/job_urls_adzuna.csv', index=False)
+    jobs_offers = [scrape_url(url) for url in tqdm(url_list,
                                                    desc="Accessing API")]
     jobs_ready_for_export = combing_each_offer(jobs_offers)
     df_adzuna_jobs = pd.DataFrame(jobs_ready_for_export)
