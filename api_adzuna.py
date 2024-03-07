@@ -10,7 +10,8 @@ This script requires that httpx, pandas, requests and tqdm modules be installed
 within the Python environment you are running this script in.
 
 A few environment variables are instantiated as parameters
-for the query on job offers.
+for the query on job offers. For security, the API_ID and API_KEY are set in 
+a .env file found at the root of the directory.
 
 This file can also be imported as a module and contains the following
 functions:
@@ -21,6 +22,7 @@ functions:
     * main - the main function of the script
 """
 
+from python-decouple import config
 from httpx import HTTPError
 import pandas as pd
 import requests
@@ -29,8 +31,8 @@ from tqdm import tqdm
 from datastruct import Company, JobOffer
 
 COUNTRY = "fr"
-API_ID = "37fe08af"
-API_KEY = "17c1369ea8fb68bc48f834aebc0bec53"
+API_ID = config("API_ID")
+API_KEY = config("API_KEY")
 RESULTS_PER_PAGE = str(25)
 PAGE_SCRAPED = 100
 QUERY_PARAMETERS = "&title_only="
