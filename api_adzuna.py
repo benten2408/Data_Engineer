@@ -58,7 +58,6 @@ def create_url():
         print(f"page_number: {page_number} and PAGE_SCRAPED {PAGE_SCRAPED}\n")
         number_page = str(page_number)
         full_url = f"http://api.adzuna.com/v1/api/jobs/{COUNTRY}/search/{number_page}?app_id={API_ID}&app_key={API_KEY}&results_per_page={RESULTS_PER_PAGE}{QUERY_PARAMETERS}{KEYWORDS}&max_days_old={MAX_OLD_DAYS}&content-type=application/json"
-        #page_number += 1
         print(f"full_url {full_url} \n")
         url_list.append(full_url)
     return url_list
