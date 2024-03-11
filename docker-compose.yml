@@ -10,6 +10,7 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=root
+
   pgadmin:
     image: dpage/pgadmin4
     restart: always
@@ -20,6 +21,11 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+
+  streamlit-dashboard:
+    build: ./streamlit_dashboard
+    ports:
+      - "8501:8501"
 
 volumes:
   postgres-data:
