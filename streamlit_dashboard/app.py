@@ -49,7 +49,7 @@ import os
 #f"type({toml_data.keys})"
 #f"{toml_data.keys}"
 
-df = pd.read_csv('/usr/src/app/streamlit_dashboard/job_offers_wttj.csv')
+df = pd.read_csv(os.path.join(os.getcwd(), 'job_offers_wttj.csv'))
 df = df.dropna(subset=['company']).reset_index(drop=True)
 df['sector'] = df.company.apply(lambda x : eval(x)['sector'].split(','))
 
@@ -114,11 +114,7 @@ postgres_uri = "postgresql://{}:{}@{}?port={}&dbname={}".format(
 )
 postgres_uri
 #postgresql://postgres:postgres@localhost?port=5432&dbname=hfds_demo
-from datasets import Dataset
 
-ds = Dataset.from_sql('SELECT * FROM joboffers;', postgres_uri)
-
-ds
 
 #import psycopg2
 #

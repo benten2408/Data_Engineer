@@ -26,6 +26,19 @@ services:
     build: ./streamlit_dashboard
     ports:
       - "8501:8501"
+    volumes:
+      - "./streamlit_dashboard:/usr/src/app"
+
+  api_backend:
+    build: ./api_backend
+    ports:
+      - 8000:8000
+    volumes:
+      - "./api_backend:/usr/src/app"
+    restart: always
+    environment:
+      - WATCHFILES_FORCE_POLLING=true
+    container_name: api_backend
 
 volumes:
   postgres-data:
