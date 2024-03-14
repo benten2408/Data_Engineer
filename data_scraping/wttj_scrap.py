@@ -1,3 +1,4 @@
+import os
 import time
 import pandas as pd
 from joblib import Parallel, delayed
@@ -10,7 +11,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.chrome.webdriver import WebDriver
 
-from datastruct import Company, JobOffer
+from data_scraping.datastruct import Company, JobOffer
+from env_config import DATA_TO_INGEST_FOLDER
 
 
 def get_page_links(driver: WebDriver, wttj_url: str, links: list):
@@ -230,8 +232,8 @@ if __name__ == "__main__":
     # wttj_url = "https://www.welcometothejungle.com/fr/jobs?refinementList%5Boffices.country_code%5D%5B%5D=FR&query=%22data%20engineer%22"
 
     # links = get_all_page_links(url=wttj_url, nb_pages=11)
-
-    links = pd.read_csv("output/jobs_links_wttj.csv")["link"].to_list()
+    jobs_links_wttj = os.path.join(DATA_TO_INGEST_FOLDER, 'jobs_links_wttj.csv')
+    links = pd.read_csv(jobs_links_wttj)["link"].to_list()
 
     job_offers = Parallel(n_jobs=4)(
         delayed(scrape_job)(link)
@@ -241,4 +243,5 @@ if __name__ == "__main__":
     df_jobs = pd.DataFrame(job_offers)
     df_jobs["source"] = "wttj"
 
-    df_jobs.to_csv("output/job_offers_wttj.csv", index=False, encoding="utf-8-sig")
+    job_offers_wttj_path = os.path.join(DATA_TO_INGEST_FOLDER, 'job_offers_wttj.csv')
+    df_jobs.to_csv(job_offers_wttj_path, index=False, encoding="utf-8-sig")

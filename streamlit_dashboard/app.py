@@ -2,11 +2,15 @@
 """
 This script uses streamlit to provide an app-like interface
 """
-
 import itertools
-import pandas as pd
-import streamlit as st
 import matplotlib.pyplot as plt
+import os
+import pandas as pd
+import plotly.express as px
+import requests
+import streamlit as st
+
+API_BASE_URL = os.environ['API_BASE_URL']
 
 st.title("Welcome to Job Market Dashboard!")
 st.title("Les offres d'emplois pour Data Engineers en France")
@@ -33,22 +37,6 @@ if st.checkbox('🇫🇷 Présentez l\'introduction en français'):
     """
 import os
 
-#cwd = os.getcwd()  # Get the current working directory (cwd)
-#files = os.listdir(cwd)  # Get all the files in that directory
-#"Files in %r: %s" % (cwd, files)
-#new_cwd = os.chdir('/usr/src/app/streamlit_dashboard')  # Get all the files in that directory
-#new_cwd = os.chdir('/usr/src/app/streamlit_dashboard/.streamlit')  # Get all the files in that directory
-#new_files = os.listdir(new_cwd)  # Get all the files in that directory
-#"Files in %r: %s" %(new_cwd,new_files)  # Get all the files in that directory
-
-#import toml
-#
-#toml_data = toml.load("/usr/src/app/streamlit_dashboard/.streamlit/secrets.toml")
-#f"{toml_data}"
-#f"type({toml_data})"
-#f"type({toml_data.keys})"
-#f"{toml_data.keys}"
-
 df = pd.read_csv(os.path.join(os.getcwd(), 'job_offers_wttj.csv'))
 df = df.dropna(subset=['company']).reset_index(drop=True)
 df['sector'] = df.company.apply(lambda x : eval(x)['sector'].split(','))
@@ -59,74 +47,11 @@ df_sector_count = df_sector.value_counts("sector")
 
 st.bar_chart(df_sector_count)
 
-#f"len(df_sector_count) {len(df_sector)} , len(sector_list)) {len(sector_list)}"
 
 # comment lier à postgres
 # on devra probablement utiliser st.cache_resource
 
 "______________ EN COURS DE CREATION________"
-# Initialize connection
-#import os
-
-# # Everything is accessible via the st.secrets dict:
-# f"os.environ['username'] == st.secrets['username'],"
-# f"{st.secrets.connections.postgresql.password}"
-# f"{st.secrets.connections.postgresql.username}"
-# f"{st.secrets.connections.postgresql.database}"
-# #"{**st.secrets.connections.postgresql}"
-#st.write("DB username:", st.secrets["username"])
-#st.write("DB password:", st.secrets["db_password"])
-#st.write("My cool secrets:", st.secrets["my_cool_secrets"]["things_i_like"])
-
-# And the root-level secrets are also accessible as environment variables:
-#st.write(
-#    "Has environment variables been set:",
-#    os.environ["db_username"] == st.secrets["db_username"],
-#)
-#conn = st.connection("postgresql", type="streamlit.connections.SQLConnection")
-
-import os
-#env POSTGRES_DB_NAME=jobmarket
-#env POSTGRES_DB_HOST=localhost
-#env POSTGRES_DB_PORT=5432
-#env POSTGRES_DB_USER=admin
-#env POSTGRES_DB_PASS=root
-#
-#postgres_uri = "postgresql://{}:{}@{}?port={}&dbname={}".format(
-#    os.environ['POSTGRES_DB_USER'],
-#    os.environ['POSTGRES_DB_PASS'],
-#    os.environ['POSTGRES_DB_HOST'],
-#    os.environ['POSTGRES_DB_PORT'],
-#    os.environ['POSTGRES_DB_NAME'],
-#)
-POSTGRES_DB_NAME='jobmarket'
-POSTGRES_DB_HOST='localhost'
-POSTGRES_DB_PORT='5432'
-POSTGRES_DB_USER='admin'
-POSTGRES_DB_PASS='root'
-
-postgres_uri = "postgresql://{}:{}@{}?port={}&dbname={}".format(
-    POSTGRES_DB_USER,
-    POSTGRES_DB_PASS,
-    POSTGRES_DB_HOST,
-    POSTGRES_DB_PORT,
-    POSTGRES_DB_NAME,
-)
-postgres_uri
-#postgresql://postgres:postgres@localhost?port=5432&dbname=hfds_demo
-
-
-#import psycopg2
-#
-#def init_connection():
-#    return psycopg2.connect(**st.secrets["postgres"])
-#    #return psycopg2.connect(**st.secrets["postgresql"])
-#
-#conn = init_connection()
-
-#conn = st.connection('postgresql', type='sql')
-
-#my_db.connect(**st.secrets.db_credentials)
 
 # Perform query
 table_choisie = st.selectbox(
@@ -188,8 +113,23 @@ update_pie()
 ## Combien d'entreprise par secteur ont publié des annonces ?
 """
 """
-## Quelles sont les "skills" les plus demandées ? (format probable barplot)
+## Quelles sont les "skills" les plus demandées ?
 """
+
+def fetch_data(endpoint):
+    print(f"{API_BASE_URL}/{endpoint}")
+    response = requests.get(f"{API_BASE_URL}/{endpoint}")
+    return pd.DataFrame(response.json(), columns=['skillname', 'nb_count'])
+
+df = fetch_data("joboffer_skills/most-demand-skills").head(15)
+
+fig = px.bar(
+    df, x='skillname', y='nb_count', title='Top 15 des compétences les plus demandées',
+    labels={'skillname': 'Compétence', 'nb_count': 'Nombre de demandes'},
+    color='nb_count', color_continuous_scale=px.colors.sequential.Viridis
+)
+
+st.plotly_chart(fig)
 """
 ## Quelle est la zone avec le plus d'offres  (format probable carte avec cercles proportionnelles au nombre d'offres)
 """

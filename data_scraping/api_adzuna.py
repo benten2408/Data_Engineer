@@ -22,17 +22,18 @@ functions:
     * main - the main function of the script
 """
 
-from decouple import config
 from httpx import HTTPError
+import os
 import pandas as pd
 import requests
 from tqdm import tqdm
 
-from datastruct import Company, JobOffer
+from data_scraping.datastruct import Company, JobOffer
+from env_config import API_ID, API_KEY, DATA_TO_INGEST_FOLDER
 
 COUNTRY = "fr"
-API_ID = config("API_ID")
-API_KEY = config("API_KEY")
+API_ID = API_ID
+API_KEY = API_KEY
 RESULTS_PER_PAGE = str(25)
 PAGE_SCRAPED = 100
 QUERY_PARAMETERS = "&title_only="
@@ -246,10 +247,13 @@ if __name__ == "__main__":
     N/A
     """
     url_list = create_url()
-    pd.DataFrame(url_list).to_csv('output/job_urls_adzuna.csv', index=False)
-    jobs_offers = [scrape_url(url) for url in tqdm(url_list,
-                                                   desc="Accessing API")]
+    job_urls_adzuna_file = os.path.join(DATA_TO_INGEST_FOLDER, 'job_urls_adzuna.csv')
+    pd.DataFrame(url_list).to_csv(job_urls_adzuna_file, index=False)
+    
+    jobs_offers = [scrape_url(url) for url in tqdm(url_list, desc="Accessing API")]
     jobs_ready_for_export = combing_each_offer(jobs_offers)
     df_adzuna_jobs = pd.DataFrame(jobs_ready_for_export)
     df_adzuna_jobs["source"] = ["adzuna_api"]*df_adzuna_jobs.shape[0]
-    df_adzuna_jobs.to_csv('output/job_offers_adzuna.csv', index=False)
+    
+    job_offers_adzuna_file = os.path.join(DATA_TO_INGEST_FOLDER, 'job_offers_adzuna.csv')
+    df_adzuna_jobs.to_csv(job_offers_adzuna_file, index=False)

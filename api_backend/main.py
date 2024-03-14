@@ -1,24 +1,30 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Query, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from typing import List, Optional
-import pandas as pd
 import json
+import os
+import pandas as pd
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from typing import List, Optional
+
+DATABASE = os.environ['DATABASE']
+DOCKER_POSTGRES_HOST = os.environ['DOCKER_POSTGRES_HOST']
+POSTGRES_USER = os.environ['POSTGRES_USER']
+POSTGRES_PASSWORD = os.environ['POSTGRES_PASSWORD']
+PORT = os.environ['PORT']
 
 api = FastAPI()
 
 users = {
-    "admin": "root",
+    POSTGRES_USER: POSTGRES_PASSWORD,
 }
 
-
 db_params = {
-    "database": "job_market",
-    "user": "admin",
-    "password": "root",
-    "host": "postgres", # postgres docker image name 
-    "port": "5432"
+	"database": DATABASE,
+	"user": POSTGRES_USER,
+	"password": POSTGRES_PASSWORD,
+	"host": DOCKER_POSTGRES_HOST,
+	"port": PORT
 }
 
 def get_db_connection():
@@ -79,6 +85,27 @@ async def get_joboffer_skills():
 	joboffer_skills = pd.read_sql("SELECT * FROM joboffer_skills", conn)
 	conn.close()
 	return joboffer_skills.to_dict(orient="records")
+
+@api.get("/joboffer_skills/most-demand-skills")
+async def get_most_demanded_skills():
+	conn = get_db_connection()
+	cur = conn.cursor()
+	joboffer_skills = cur.execute(
+		"""
+		SELECT skillname, count(*) AS nb_count 
+		FROM joboffer_skills AS jos
+		JOIN skills AS s
+		ON jos.skillid = s.skillid
+		GROUP BY skillname ORDER BY nb_count DESC;
+		"""
+	)
+	joboffer_skills = cur.fetchall()
+
+	conn.commit()
+	cur.close()
+	conn.close()
+
+	return joboffer_skills
 
 @api.get("/joboffers")
 async def get_joboffers():
