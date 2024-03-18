@@ -1,117 +1,67 @@
 #!/usr/bin/env python3
 """
 This script uses streamlit to provide an app-like interface
+enabling some interaction with the vizualisations
 """
+#ces imports seront in fine dans streamlit_dashboard/requirements.txt
 import itertools
-import matplotlib.pyplot as plt
-import os
 import pandas as pd
-import plotly.express as px
-import requests
 import streamlit as st
+import matplotlib.pyplot as plt
+import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+import requests
+from cleaning import clean_column_df 
+from cleaning import sort_contracttypes
+import time 
+import folium
+import plotly.express as px
+from stqdm import stqdm
+stqdm.pandas(desc="Récupération des coordonnées géographiques ")
 
 API_BASE_URL = os.environ['API_BASE_URL']
 
-st.title("Welcome to Job Market Dashboard!")
-st.title("Les offres d'emplois pour Data Engineers en France")
+titre = "Projet Jobmarket : les offres d'emplois pour Data Engineers en France"
+st.title(titre)
 
-if st.checkbox('🇬🇧 Show English description'):
-    """
-    ## This is our app created for the project during our DataScientest Data Engineering bootcamp.
-    Our chosen topic is Job Market and we decided to focus our data on Data Engineering offers published in France in the previous 30 days.
-    Our 5 main KPI answer these questions:
-    - which is the sector that recruits the most?
-    - 
-    """
-if st.checkbox('🇫🇷 Présentez l\'introduction en français'):
-    """
-    Voici le résultat de nos recherches sur les offres d'emplois de Data Engineer  publiées en France au cours des 30 derniers jours.\n
-    Nous avons récolté les annonces publiées sur Welcome to The Jungle et via l'API d'Adzuna, deux aggrégateurs.\n
-    5 tables ont alors été créées : JobOffer_Skills, JobOffers, Skills, Sources, Companies.\n
-    Notre objectif est de répondre à ces 5 questions : 
-    - quel secteur recrute le plus ?
-    - combien d'entreprise par secteur ont publié des annonces ?
-    - quelles sont les "skills" les plus demandées ? (format probable barplot)
-    - quelle est la zone avec le plus d'offres  (format probable carte avec cercles proportionnelles au nombre d'offres)
-    - quel est le contrat majoritairement proposé dans les annonces ? 
-    """
-import os
+"""
+Dans le cadre de la formation de Data Engineer par DataScientest au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.\n
+Voici le résultat de nos recherches sur les offres d'emplois de Data Engineer  publiées en France au cours des 30 derniers jours.\n
+Nous avons récolté les annonces publiées sur Welcome to The Jungle et via l'API d'Adzuna, deux aggrégateurs. _(ajout lien url ?)_\n
+Ces données ont alimenté 5 tables : JobOffer_Skills, JobOffers, Skills, Sources, Companies. _(ajout diagramme UML ?)_\n
 
-df = pd.read_csv(os.path.join(os.getcwd(), 'job_offers_wttj.csv'))
-df = df.dropna(subset=['company']).reset_index(drop=True)
-df['sector'] = df.company.apply(lambda x : eval(x)['sector'].split(','))
+Notre objectif est de répondre à ces 5 questions  _(ajout lien cliquable ?)_: 
+- quels secteurs recrutent le plus ?
+- combien d'entreprises par secteur ont publié des annonces ?
+- quelles sont les "skills"  _(à remplacer par compétences ?)_ les plus demandées ?
+- quel est le contrat majoritairement proposé dans les annonces ? 
+- quelle est la zone géographique avec le plus d'offres ?  _(à remplacer par Quelle est la répartition géographique des offres ?)_
+"""
 
-sector_list = list(itertools.chain.from_iterable(df['sector']))
-df_sector = pd.DataFrame(sector_list, columns=["sector"])
-df_sector_count = df_sector.value_counts("sector")
-
-st.bar_chart(df_sector_count)
-
-
-# comment lier à postgres
-# on devra probablement utiliser st.cache_resource
-
-"______________ EN COURS DE CREATION________"
+conn = psycopg2.connect(**st.secrets.db_params)
+conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
 # Perform query
 table_choisie = st.selectbox(
     'De quelle table souhaitez-vous voir un extrait ?',
-    ('Companies', 'Sources', 'Skills', 'JobOffers', 'JobOffer_Skills'))
+    ('JobOffers', 'Companies', 'Sources', 'Skills', 'JobOffer_Skills'))
 
-# st.write("Voici l'extrait de la table ", table_choisie, ".\n")
-# extrait = conn.query(f"select * from {table_choisie} LIMIT 15")
-# st.dataframe(extrait)
+query = f"SELECT * FROM {table_choisie};"
 
-# By default, query() results are cached without expiring. In this case, we set ttl="10m" to ensure the query result is cached for no longer than 10 minutes. You can also set ttl=0 to disable caching. Learn more in Caching.
-# df = conn.query('SELECT * FROM joboffers;', ttl="10m")
-
-# Print results.
-"Ici les 10 premières annonces de la table JobOffers : "
-for row in df[:10].itertuples():
-    st.write(f"Le poste « {row.title} » se situe à {row.location}.")
-
-"# _ EN COURS DE CREATION _"
+table_to_display = pd.read_sql(query, conn)
+f"### Voici la table {table_choisie}"
+st.dataframe(table_to_display)
+"### une brève description avec la méthode describe() de pandas"
+st.dataframe(table_to_display.describe(include="all"))
 
 "## Quels secteurs recrutent le plus ?"
-
-
-def update_pie():
-    """
-    Enabling the display of top recruiting sectors
-    in piechart format depending on the input_number 
-    chosen by the user and accessed via the session_state
-    """
-    top_number = st.session_state.input_number
-    unique_sectors = set(sector_list)
-    only_top_sectors = list(unique_sectors)[:top_number]
-    # Pie chart, where the slices will be ordered and plotted counter-clockwise:
-    fig1, ax1 = plt.subplots()
-    #problème à régler car pourcentage relatif au top_number probablement du à autopct='%1.1f%%' mais je ne sais pas comment afficher la valeur autrement
-    ax1.pie(df_sector_count[:top_number], labels=only_top_sectors,
-            shadow=True, startangle=90, autopct='%1.1f%%')
-    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-    st.pyplot(fig1)
-
-
-col1,col2,col3 = st.columns(3)
-
-with col1:
-    "Vous voulez voir le top"
-
-with col2:
-    top_sectors = st.number_input("top", min_value=0, max_value=10, value=3,
-                                  step=1, key="input_number", format="%d",
-                                  on_change=update_pie,
-                                  label_visibility="collapsed")
-
-with col3:
-    "des secteurs qui recrutent"
-
-update_pie()
+# géré par Jean
 
 """
 ## Combien d'entreprise par secteur ont publié des annonces ?
 """
+# géré par Jean
+
 """
 ## Quelles sont les "skills" les plus demandées ?
 """
@@ -130,9 +80,113 @@ fig = px.bar(
 )
 
 st.plotly_chart(fig)
-"""
-## Quelle est la zone avec le plus d'offres  (format probable carte avec cercles proportionnelles au nombre d'offres)
-"""
+
 """
 ## Quel est le contrat majoritaire proposé dans les annonces ? 
 """
+
+#à remplacer evntually par la connexion api
+query = "SELECT contracttype, COUNT(*) AS number_offer FROM joboffers GROUP BY contracttype ORDER BY contracttype DESC;"
+all_contracts = pd.read_sql(query, conn)
+
+#st.dataframe(all_contracts)
+
+# Worth mentionning, the nunique() method does NOT include the None values
+f"""Initialement, les {all_contracts.number_offer.sum()} annonces récupérées sont réparties en {all_contracts['contracttype'].nunique()} types de contrat possibles.\n"""
+
+#all_contracts = all_contracts.fillna('Non spécifié')
+#loc to find the value of (condition all 'Non spécifié' contractype) followed by values[0] transforming the dataframe in a numpy array and extracting its single value
+#unspecified_contracts = all_contracts.loc[all_contracts['contracttype'] == "Non spécifié", ['number_offer']].values[0]
+
+unspecified_contracts = all_contracts.loc[all_contracts.contracttype.isnull(), ['number_offer']].values[0]
+
+all_contracts['contracttype'] = all_contracts['contracttype'].apply(lambda x : sort_contracttypes(x))
+unspecified_contracts += all_contracts.contracttype.isnull().sum()
+known_contracts = all_contracts.dropna(subset = ['contracttype'])
+result = known_contracts.groupby('contracttype')['number_offer'].sum().reset_index()
+result.sort_values('number_offer', inplace=True, ascending=False)
+f"""
+Pour une meilleure lisibilité, nous les avons rassemblées en 5 catégores* : \n
+- CDI
+- CDD
+- Freelance 
+- Alternance
+- Stage\n
+*sans compter donc les {int(unspecified_contracts)} annonces où le contrat n'est pas mentionné."""
+
+
+fig = px.bar(
+    result,  x="contracttype", y="number_offer", title='Les 5 contrats possibles',
+    labels={'contracttype': 'Contrats', 'number_offer': 'Nombre d\'annonces'},
+    text="number_offer",
+    color='number_offer', color_continuous_scale=px.colors.sequential.Viridis
+)
+
+st.plotly_chart(fig)
+
+"""
+## Quelle est la zone avec le plus d'offres ?
+"""
+# géré par Elsa
+# (format probable carte avec cercles proportionnelles au nombre d'offres)
+
+query = "SELECT * FROM joboffers;"
+all_offers = pd.read_sql(query, conn)
+#st.dataframe(all_offers)
+unknown_locations = all_offers.location.isnull().sum()
+not_all_offers = all_offers.dropna(subset = ['location'])
+
+import requests
+
+def get_lat_long_city_adresse_gouv(row):
+    #row
+    #address = row["location"]
+    address = row
+    url = "https://api-adresse.data.gouv.fr/search/?q=" + str(address)
+    #time.sleep(1)
+    try:
+        response = requests.get(url).json()
+        if response["features"][0]:
+            #f"response {response}"
+            longitude = response["features"][0]["geometry"]["coordinates"][0]
+            latitude = response["features"][0]["geometry"]["coordinates"][1]
+            #f"location {address}  latitude {latitude}  longitude {longitude}"
+            return (latitude, longitude)
+    except:
+        f"Pour information, les coordonnées de l'adresse « {address} » n'ont pas pu être récupérées"
+        return (None,None)
+
+
+time_start = time.time()
+not_all_offers["latitude"], not_all_offers["longitude"] = zip(*not_all_offers["location"].progress_apply(lambda x : get_lat_long_city_adresse_gouv(x)))
+time_end = time.time()
+time_diff = time_end - time_start
+f"La récupération des coordonnées géographiques via get_lat_long_city_adresse_gouv a pris {time_diff} secondes"
+cleared_lat = not_all_offers.dropna(subset = ['latitude'])
+cleared_lat_lon = cleared_lat.dropna(subset = ['longitude'])
+unknown_latitudes = not_all_offers.latitude.isnull().sum()
+unknown_longitudes = cleared_lat.longitude.isnull().sum()
+unknown_lat_lon = unknown_latitudes + unknown_longitudes
+
+f"""L'adresse n'étant pas précisée sur {unknown_locations} annonces, elles ont par conséquent été retirées.\n
+Sur les {not_all_offers.shape[0]} annonces restantes, {unknown_lat_lon} annonce(s)
+supplémentaire(s) a(ont) dû être supprimé(es), faute de coordonnées géographiques.
+\nVoici la répartition géographique des {cleared_lat_lon.shape[0]} annonces
+finales."""
+import colormaps as cmaps
+plt.register_cmap(name='viridis', cmap=cmaps.viridis)
+plt.set_cmap(cmaps.viridis)
+result = cleared_lat_lon.reset_index()
+#st.dataframe(result)
+st.map(result,color=)
+import colormaps as cmaps
+
+# ajout nombre d'offres
+# ajout proportionalité taille 
+# ajout lien annonce
+# ajout lien url cliquable
+
+
+
+conn.commit()
+conn.close()
