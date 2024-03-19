@@ -3,7 +3,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from env_config import DATABASE, POSTGRES_USER, POSTGRES_PASSWORD, HOST, PORT
 
 from postgresql.create_db_schema import create_database_query, create_schema_query
-from postgresql.ingest_data import ingest_joboffers_query, ingest_skills_query
+from postgresql.ingest_data import ingest_joboffers_query, ingest_skills_query, location_process
 
 class DatabaseManager:
 	def __init__(self, default=True):
@@ -27,6 +27,7 @@ class DatabaseManager:
 
 		try:
 			create_database_query(cur)
+			print(f"Database '{DATABASE}' created successfully.")
 		except psycopg2.Error as e:
 			print(f"An error occurred: {e}")
 		finally:
@@ -55,8 +56,9 @@ class DatabaseManager:
 
 		ingest_skills_query(cur)
 		ingest_joboffers_query(cur)
+		location_process(cur)
 
-		print(f"Data ingest to {DATABASE} successfully.")
+		print(f"Data ingested in {DATABASE} successfully.")
 
 		conn.commit()
 		cur.close()

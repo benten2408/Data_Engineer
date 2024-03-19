@@ -6,7 +6,7 @@ def create_database_query(cur):
 
     cur.execute(f"DROP DATABASE IF EXISTS {DATABASE} WITH (force);")
     cur.execute(f"CREATE DATABASE {DATABASE};")
-    print(f"Database '{DATABASE}' created successfully.")
+
 
 def create_schema_query(cur):
 
@@ -57,6 +57,14 @@ def create_schema_query(cur):
             skillId INTEGER REFERENCES Skills(skillId),
             PRIMARY KEY (jobOfferId, skillId)
         );
+        """,
+        """
+        CREATE TABLE Locations (
+            location VARCHAR(255),
+            latitude DOUBLE PRECISION,
+            longitude DOUBLE PRECISION,
+            PRIMARY KEY (location)
+        );
         """
     )
 
@@ -67,10 +75,3 @@ def create_schema_query(cur):
             print(f"Table {table_name} created successfully.")
         except psycopg2.Error as e:
             print(f"An error occurred: {e}")
-
-    
-    print(f"{DATABASE} database schema created successfully.")
-
-
-
-

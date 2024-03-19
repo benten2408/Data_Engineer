@@ -3,6 +3,7 @@ import pandas as pd
 
 import locale
 locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+import requests
 
 from env_config import DATA_TO_INGEST_FOLDER
 
@@ -67,6 +68,7 @@ def get_or_create_company(cur, company_data):
         return cur.fetchone()[0]
 
 def get_or_create_source(cur, source_name):
+    #print(source_name, type(source_name))
     cur.execute("SELECT sourceId FROM Sources WHERE sourceName = %s;", (source_name,))
     result = cur.fetchone()
     if result:
@@ -130,4 +132,47 @@ def ingest_joboffers_query(cur):
 			job_offer_data
 		)
 		jobOfferId = cur.fetchone()
-		link_job_skill(cur,row, jobOfferId, skills_list)
+		link_job_skill(cur, row, jobOfferId, skills_list)
+
+
+def get_location_coordinates(address):
+    url = "https://api-adresse.data.gouv.fr/search/?q=" + str(address)
+    try:
+        response = requests.get(url).json()
+        if response["features"][0]:
+            #f"response {response}"
+            longitude = response["features"][0]["geometry"]["coordinates"][0]
+            latitude = response["features"][0]["geometry"]["coordinates"][1]
+            #f"location {address}  latitude {latitude}  longitude {longitude}"
+            return (latitude, longitude)
+    except:
+        f"Pour information, les coordonnées de l'adresse « {address} » n'ont pas pu être récupérées"
+        return (None,None)
+
+
+def create_csv_coordinates():
+    df = concat_format_data()
+    location = pd.DataFrame(df["location"].unique(), columns=["location"])
+    location = location.dropna()
+    location["latitude"], location["longitude"] = zip(*location["location"].apply(lambda x : get_location_coordinates(x))) #axis = 0
+    location.to_csv(os.path.join(DATA_TO_INGEST_FOLDER, 'locations.csv'), index=False)
+
+
+def get_or_create_location(cur, location_data):
+    #print(location_data)
+    #print(type(location_data))
+    cur.execute("SELECT location FROM Locations WHERE location = %s;", (str(location_data["location"]),))
+    result = cur.fetchone()
+    if result is None:
+        cur.execute("INSERT INTO Locations (location, latitude, longitude) VALUES (%s, %s, %s);",location_data)
+
+
+def ingest_location(cur):
+    df = pd.read_csv(os.path.join(DATA_TO_INGEST_FOLDER, 'locations.csv'))
+    for _, row in df.iterrows():
+        get_or_create_location(cur, row) 
+
+
+def location_process(cur):
+	create_csv_coordinates()
+	ingest_location(cur) 
