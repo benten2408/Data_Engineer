@@ -4,20 +4,14 @@ This script uses streamlit to provide an app-like interface
 enabling some interaction with the vizualisations
 """
 #ces imports seront in fine dans streamlit_dashboard/requirements.txt
-#import itertools
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
-#import psycopg2
-#from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import requests
 import os
 import json
 import time 
-#import folium
 import plotly.express as px
-#from stqdm import stqdm
-#stqdm.pandas(desc="Récupération des coordonnées géographiques ")
 
 API_BASE_URL = os.environ['API_BASE_URL']
 
@@ -131,11 +125,6 @@ def fetch_full_data(endpoint):
 all_contracts = fetch_full_data("joboffers_contracts")
 # Worth mentionning, the nunique() method does NOT include the None values
 f"""Initialement, les {all_contracts.number_offer.sum()} annonces récupérées sont réparties en {all_contracts['contracttype'].nunique()} types de contrat possibles.\n"""
-
-#all_contracts = all_contracts.fillna('Non spécifié')
-#loc to find the value of (condition all 'Non spécifié' contractype) followed by values[0] transforming the dataframe in a numpy array and extracting its single value
-#unspecified_contracts = all_contracts.loc[all_contracts['contracttype'] == "Non spécifié", ['number_offer']].values[0]
-
 unspecified_contracts = all_contracts.loc[all_contracts.contracttype.isnull(), ['number_offer']].values[0]
 
 all_contracts['contracttype'] = all_contracts['contracttype'].apply(lambda x : sort_contracttypes(x))
@@ -181,34 +170,10 @@ def fetch_location_coordinates(endpoint):
     return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude'])
 
 all_offers = fetch_full_data("joboffers")
-all_offers
-
 location_coordinates = fetch_location_coordinates("coordinates")
 
-location_coordinates
-
-#all_offers = all_offers.merge(location_coordinates, how="left", on="location")
-#all_offers
 unknown_locations = all_offers.location.isnull().sum()
 not_all_offers = all_offers.dropna(subset = ['location'])
-
-#cleared_lat = not_all_offers.dropna(subset = ['latitude'])
-#cleared_lat_lon = cleared_lat.dropna(subset = ['longitude'])
-#unknown_latitudes = not_all_offers.latitude.isnull().sum()
-#unknown_longitudes = cleared_lat.longitude.isnull().sum()
-#unknown_lat_lon = unknown_latitudes + unknown_longitudes
-
-#f"""L'adresse n'étant pas précisée sur {unknown_locations} annonces, elles ont par conséquent été retirées.\n
-#Sur les {not_all_offers.shape[0]} annonces restantes, {unknown_lat_lon} annonce(s)
-#supplémentaire(s) a(ont) dû être supprimé(es), faute de coordonnées géographiques.
-#\nVoici la répartition géographique des {cleared_lat_lon.shape[0]} annonces
-#finales."""
-
-#import colormaps as cmaps
-#plt.register_cmap(name='viridis', cmap=cmaps.viridis)
-#plt.set_cmap(cmaps.viridis)
-#result = cleared_lat_lon.reset_index()
-#st.dataframe(result)
 st.map(location_coordinates)
 
 
