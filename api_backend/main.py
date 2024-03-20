@@ -113,3 +113,19 @@ async def get_joboffers():
 	joboffers = pd.read_sql("SELECT * FROM joboffers", conn)
 	conn.close()
 	return joboffers.to_dict(orient="records")
+
+@api.get("/joboffers_contracts")
+async def get_joboffers_contracts():
+	conn = get_db_connection()
+	joboffers_contracts = pd.read_sql("SELECT contracttype, COUNT(*) AS number_offer FROM joboffers GROUP BY contracttype ORDER BY contracttype DESC;", conn)
+	conn.close()
+	return joboffers_contracts.to_dict(orient="records")
+
+@api.get("/coordinates")
+async def get_location_coordinates():
+	conn = get_db_connection()
+	locations = pd.read_sql("SELECT * FROM locations", conn)
+	locations = locations.dropna()
+	conn.close()
+	return locations.to_dict(orient="records")
+	

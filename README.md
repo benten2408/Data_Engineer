@@ -15,7 +15,11 @@ company-specific information. It rather redirects the user towards the primary
 url where the ad is available in full details.
 
 To use our tool, please follow these steps:
-1. <to complete>
-2. create credentials on https://developer.adzuna.com/signup 
-3. <to complete>
+1. clone this repository in a directory
+2. you've been provided with a zipped .env file that needs to be located at the root
+of the newly created directory 
+3. create and run the containers thanks to the command docker-compose up --build -d
+4. you will need to create a register JobMarket in  pgadmin (http://localhost:8888) 
+5. then you can launch the database creation and data ingestion via python3 -m postgresql.db_main --function_name create_all
+
 
