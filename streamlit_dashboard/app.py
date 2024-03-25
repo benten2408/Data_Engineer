@@ -12,6 +12,7 @@ import os
 import json
 import time 
 import plotly.express as px
+import folium
 
 API_BASE_URL = os.environ['API_BASE_URL']
 
@@ -156,6 +157,12 @@ st.plotly_chart(fig)
 """
 # géré par Elsa
 # (format probable carte avec cercles proportionnelles au nombre d'offres)
+#from branca.colormap import viridis
+# import branca.colormap as cm
+import matplotlib.cm as cm
+from matplotlib.colors import rgb2hex
+from streamlit_folium import st_folium
+"# streamlit-folium"
 
 
 def fetch_full_data(endpoint):
@@ -165,20 +172,94 @@ def fetch_full_data(endpoint):
 
 
 def fetch_location_coordinates(endpoint):
-    print(f"{API_BASE_URL}/{endpoint}")
+    #print(f"{API_BASE_URL}/{endpoint}")
     response = requests.get(f"{API_BASE_URL}/{endpoint}")
+    print(response)
     return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude'])
 
 all_offers = fetch_full_data("joboffers")
+all_offers
 location_coordinates = fetch_location_coordinates("coordinates")
 
 unknown_locations = all_offers.location.isnull().sum()
 not_all_offers = all_offers.dropna(subset = ['location'])
+location_coordinates
 st.map(location_coordinates)
 
+all_offers_located = pd.merge(not_all_offers, location_coordinates, on='location', how='left')
+all_offers_located = all_offers_located.dropna(subset=['latitude', 'longitude'])
+# Display merged dataframe
+all_offers_located
+st.map(all_offers_located)
 
 # ajout nombre d'offres
-# ajout proportionalité taille 
+# ajout proportionalité taille
 # ajout lien annonce
 # ajout lien url cliquable
 
+# Calculate marker size based on job offer count
+
+# Group data by location and count number of job offers at each location
+location_counts = all_offers_located.groupby(['latitude', 'longitude']).size().reset_index(name='job_offer_count')
+
+# Calculate marker size proportional to the number of job offers
+max_job_offers = location_counts['job_offer_count'].max()
+scaling_factor = 50  # Adjust as needed
+location_counts['marker_size'] = location_counts['job_offer_count'] / max_job_offers * scaling_factor
+
+# Create Folium map centered on the mean of the coordinates
+m = folium.Map(location=[all_offers_located['latitude'].mean(), all_offers_located['longitude'].mean()], zoom_start=5)
+
+# Add markers to the map
+for index, row in location_counts.iterrows():
+    folium.CircleMarker(
+        location=[row['latitude'], row['longitude']],
+        radius=row['marker_size'],
+        color='blue',
+        fill=True,
+        fill_color='blue'
+    ).add_to(m)
+
+# Display the map in Streamlit
+#st.write(m)
+# call to render Folium map in Streamlit
+st_folium(m)
+
+
+# Group data by location and count number of job offers at each location
+location_counts = all_offers_located.groupby(['latitude', 'longitude']).size().reset_index(name='job_offer_count')
+
+# Normalize job offer counts to range [0, 1] for the color scale
+min_count = location_counts['job_offer_count'].min()
+max_count = location_counts['job_offer_count'].max()
+location_counts['normalized_count'] = (location_counts['job_offer_count'] - min_count) / (max_count - min_count)
+
+# Create a colormap using Viridis from Matplotlib
+colormap = cm.viridis
+
+# Convert colormap to list of HTML hex colors
+num_colors = 100  # Choose the number of colors to generate
+colors = [rgb2hex(colormap(i / num_colors)[:3]) for i in range(num_colors)]
+
+
+# Create Folium map centered on the mean of the coordinates
+m = folium.Map(location=[all_offers_located['latitude'].mean(), all_offers_located['longitude'].mean()], zoom_start=5)
+
+# Add markers to the map with colors from the colormap
+for index, row in location_counts.iterrows():
+    color_index = int(row['normalized_count'] * (num_colors - 1))
+    color = colors[color_index]
+    folium.CircleMarker(
+        location=[row['latitude'], row['longitude']],
+        radius=5,
+        color=None,
+        fill=True,
+        fill_color=color,
+    ).add_to(m)
+
+# Add legend for the color scale
+colormap.caption = 'Number of Job Offers'
+#m.add_child(colormap)
+
+# Display the map in Streamlit
+st.write(m)
