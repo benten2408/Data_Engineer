@@ -15,10 +15,13 @@ import plotly.express as px
 import folium
 
 API_BASE_URL = os.environ['API_BASE_URL']
-
+st.set_page_config(layout="wide")
 titre = "Projet Jobmarket : les offres d'emplois pour Data Engineers en France"
 st.title(titre)
 
+
+# pour rendre l'ensemble en onglet 
+# https://docs.streamlit.io/library/api-reference/layout/st.tabs
 
 def clean_column_df(df, column):
     """
@@ -99,12 +102,11 @@ Notre objectif est de répondre à ces 5 questions  _(ajout lien cliquable ?)_:
 ## Quelles sont les "skills" les plus demandées ?
 """
 
-def fetch_data(endpoint):
-    print(f"{API_BASE_URL}/{endpoint}")
+def fetch_data_skills(endpoint):
     response = requests.get(f"{API_BASE_URL}/{endpoint}")
     return pd.DataFrame(response.json(), columns=['skillname', 'nb_count'])
 
-df = fetch_data("joboffer_skills/most-demand-skills").head(15)
+df = fetch_data_skills("joboffer_skills/most-demand-skills").head(15)
 
 fig = px.bar(
     df, x='skillname', y='nb_count', title='Top 15 des compétences les plus demandées',
@@ -158,120 +160,179 @@ st.plotly_chart(fig)
 # géré par Elsa
 # (format probable carte avec cercles proportionnelles au nombre d'offres)
 
-# from branca.colormap import viridis
-# import branca.colormap as cm
-# import matplotlib.cm as cm
-# from matplotlib.colors import rgb2hex
-# from branca.colormap import linear
-# from streamlit_folium import st_folium
-# "# streamlit-folium"
-
-import altair as alt
-import matplotlib.pyplot as plt
-
 
 def fetch_full_data(endpoint):
-    #print(f"{API_BASE_URL}/{endpoint}")
+    """
+    returns 
+    """
     response = requests.get(f"{API_BASE_URL}/{endpoint}")
     return pd.DataFrame(response.json())
 
 
 def fetch_location_coordinates(endpoint):
-    #print(f"{API_BASE_URL}/{endpoint}")
+    """
+    returns 
+    """
+    
     response = requests.get(f"{API_BASE_URL}/{endpoint}")
-    print(response)
     return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude'])
 
 all_offers = fetch_full_data("joboffers")
-all_offers
+#all_offers
 location_coordinates = fetch_location_coordinates("coordinates")
+#location_coordinates
+st.map(location_coordinates)
 
 unknown_locations = all_offers.location.isnull().sum()
 not_all_offers = all_offers.dropna(subset = ['location'])
-location_coordinates
-st.map(location_coordinates)
 
 all_offers_located = pd.merge(not_all_offers, location_coordinates, on='location', how='left')
 all_offers_located = all_offers_located.dropna(subset=['latitude', 'longitude'])
 # Display merged dataframe
-all_offers_located
-st.map(all_offers_located)
+#all_offers_located
+#st.map(all_offers_located)
 
 # ajout nombre d'offres
-# ajout proportionalité taille
+# ajout proportionalité taille via couleur
 # ajout lien annonce
 # ajout lien url cliquable
+# ajout bouton pour centrer France métropolitaine
 
 
 
-# FOLIUM FIRST TEST
-# STREAMLIT_FOLIUM
-"""
+# ALTAIR FIRST TEST
+
+import altair as alt
+import matplotlib.pyplot as plt
+
+print(alt.topo_feature('france_topo.json', 'feature').to_dict())
+
+#a_com_topo = d3.json("https://static.data.gouv.fr/resources/contours-des-communes-de-france-simplifie-avec-regions-et-departement-doutre-mer-rapproches/20210523-101900/a-com2021-2154-topo.json")
+
+# France GeoJSON data source
+france_geojson_url = 'https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions.geojson'
+
+# Create Altair's topo feature for France
+france = alt.topo_feature(france_geojson_url, 'regions')
+
+
+# France GeoJSON data source
+france_geojson_url = 'https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions.geojson'
+
+# Create a base map layer
+base_map = alt.Chart(alt.Data(url=france_geojson_url)).mark_geoshape(
+    fill='lightgray',
+    stroke='white'
+).encode(
+    tooltip=['properties.nom:N']
+).properties(
+    width=600,
+    height=400
+)
+
+# Display the base map
+#base_map
+
+
+# TOPO FIRST TEST 
+# 
+# import topojson # install from https://github.com/sgillies
+# import json
+# 
+# with open("france_topo.json") as json_file:
+#     "bloud"
+#     jdata = json_file.read()
+#     topoJSON = json.loads(jdata)
+# 
+# topoJSON
+# 
+# with open("france_topo.json", 'r') as f:
+#     data = json.load(f)
+# # parse topojson file using `object_name`
+# topo = topojson.Topology(data, object_name="data")
+# topo.toposimplify(4).to_svg()
+
+
+
+# PYDECK TEST 
+
+
+import pydeck as pdk
+
+
+# Defining the Latitude and Longite as 0 to centre the map
+# setting it at the center of France
+lat0=47.0
+lon0=2.0
+#zoom 4.3 to show Corsica completely
+# other choice could be 
+# location=[all_offers_located['latitude'].mean(), all_offers_located['longitude'].mean()]
+# but because some offers are way over the map not fun 
+
+legend="test"
+
+st.pydeck_chart(pdk.Deck(
+    map_style=None,
+    initial_view_state=pdk.ViewState(
+        latitude=lat0,
+        longitude=lon0,
+        zoom=4.3,
+        pitch=20,
+        description=legend,
+    ),
+    
+    layers=[(pdk.Layer(
+    "ColumnLayer",
+    data=all_offers_located,
+    get_position='[longitude, latitude]',
+    elevation_scale=50,
+    pickable=True,
+    elevation_range=[50, 500],
+    get_fill_color=[180, 0, 200, 140],
+    extruded=True,
+    radius=25,
+    coverage=50,
+    auto_highlight=True,)
+),
+        pdk.Layer(
+            "GeoJsonLayer",
+            data=all_offers_located,
+            get_position='[longitude, latitude]',
+            get_color='[200, 30, 0, 160]',
+            #get_radius=20,
+        ),
+    ],
+))
+
+
+# PLOTLY TEST 
+
 # Group data by location and count number of job offers at each location
-location_counts = all_offers_located.groupby(['latitude', 'longitude']).size().reset_index(name='job_offer_count')
+locations = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')
+#locations
+#st.write(type(locations))
+#st.write(locations.columns)
 
 # Calculate marker size proportional to the number of job offers
-max_job_offers = location_counts['job_offer_count'].max()
-scaling_factor = 50  # Adjust as needed
-location_counts['marker_size'] = location_counts['job_offer_count'] / max_job_offers * scaling_factor
+#max_job_offers = locations['job_offer_count'].max()
+#max_job_offers
+#scaling_factor = 10  # Adjust as needed
+#locations['marker_size'] = (locations['job_offer_count'] / max_job_offers) * scaling_factor
+#all_offers_located['job_offer_count'] = locations['job_offer_count'].copy()
+#all_offers_located['marker_size'] = locations["marker_size"].copy()
+#location_counts
 
-# Create Folium map centered on the mean of the coordinates
-m = folium.Map(location=[all_offers_located['latitude'].mean(), all_offers_located['longitude'].mean()], zoom_start=5)
-
-# Add markers to the map
-for index, row in location_counts.iterrows():
-    folium.CircleMarker(
-        location=[row['latitude'], row['longitude']],
-        radius=row['marker_size'],
-        color='blue',
-        fill=True,
-        fill_color='blue'
-    ).add_to(m)
-
-# Display the map in Streamlit
-#st.write(m)
-# call to render Folium map in Streamlit
-st_folium(m)
-"""
-
-# FOLIUM SECOND TEST FOR COLOR
-"""
-
-# Group data by location and count number of job offers at each location
-location_counts = all_offers_located.groupby(['latitude', 'longitude']).size().reset_index(name='job_offer_count')
-
-# Normalize job offer counts to range [0, 1] for the color scale
-min_count = location_counts['job_offer_count'].min()
-max_count = location_counts['job_offer_count'].max()
-location_counts['normalized_count'] = (location_counts['job_offer_count'] - min_count) / (max_count - min_count)
-
-# Create a colormap using Viridis from Matplotlib
-colormap = cm.viridis
-
-# Convert colormap to list of HTML hex colors
-num_colors = 100  # Choose the number of colors to generate
-colors = [rgb2hex(colormap(i / num_colors)[:3]) for i in range(num_colors)]
+#all_offers_located
 
 
-# Create Folium map centered on the mean of the coordinates
-m = folium.Map(location=[all_offers_located['latitude'].mean(), all_offers_located['longitude'].mean()], zoom_start=5)
 
-# Add markers to the map with colors from the colormap
-for index, row in location_counts.iterrows():
-    color_index = int(row['normalized_count'] * (num_colors - 1))
-    color = colors[color_index]
-    folium.CircleMarker(
-        location=[row['latitude'], row['longitude']],
-        radius=5,
-        color=None,
-        fill=True,
-        fill_color=color,
-    ).add_to(m)
+import plotly.express as px
 
-# Add legend for the color scale
-colormap.caption = 'Number of Job Offers'
-#m.add_child(colormap)
 
-# Display the map in Streamlit
-st.write(m)
-"""
+#px.set_mapbox_access_token(open(".mapbox_token").read())
+
+#locations
+fig = px.scatter_mapbox(locations, lat="latitude", lon="longitude", hover_name= "location", color='job_offer_count', size='job_offer_count',
+                  color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
+fig.update_layout(mapbox_style='open-street-map')
+st.plotly_chart(fig, use_cotainer_width=True)
