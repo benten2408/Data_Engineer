@@ -157,12 +157,17 @@ st.plotly_chart(fig)
 """
 # géré par Elsa
 # (format probable carte avec cercles proportionnelles au nombre d'offres)
-#from branca.colormap import viridis
+
+# from branca.colormap import viridis
 # import branca.colormap as cm
-import matplotlib.cm as cm
-from matplotlib.colors import rgb2hex
-from streamlit_folium import st_folium
-"# streamlit-folium"
+# import matplotlib.cm as cm
+# from matplotlib.colors import rgb2hex
+# from branca.colormap import linear
+# from streamlit_folium import st_folium
+# "# streamlit-folium"
+
+import altair as alt
+import matplotlib.pyplot as plt
 
 
 def fetch_full_data(endpoint):
@@ -197,8 +202,11 @@ st.map(all_offers_located)
 # ajout lien annonce
 # ajout lien url cliquable
 
-# Calculate marker size based on job offer count
 
+
+# FOLIUM FIRST TEST
+# STREAMLIT_FOLIUM
+"""
 # Group data by location and count number of job offers at each location
 location_counts = all_offers_located.groupby(['latitude', 'longitude']).size().reset_index(name='job_offer_count')
 
@@ -224,7 +232,10 @@ for index, row in location_counts.iterrows():
 #st.write(m)
 # call to render Folium map in Streamlit
 st_folium(m)
+"""
 
+# FOLIUM SECOND TEST FOR COLOR
+"""
 
 # Group data by location and count number of job offers at each location
 location_counts = all_offers_located.groupby(['latitude', 'longitude']).size().reset_index(name='job_offer_count')
@@ -263,3 +274,4 @@ colormap.caption = 'Number of Job Offers'
 
 # Display the map in Streamlit
 st.write(m)
+"""
