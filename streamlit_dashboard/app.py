@@ -19,10 +19,7 @@ st.set_page_config(layout="wide")
 titre = "Projet Jobmarket : les offres d'emplois pour Data Engineers en France"
 st.title(titre)
 
-
-# pour rendre l'ensemble en onglet 
-# https://docs.streamlit.io/library/api-reference/layout/st.tabs
-
+# a ejecter dans un autre fichier
 def clean_column_df(df, column):
     """
     to clean all rows where location is Null
@@ -32,7 +29,7 @@ def clean_column_df(df, column):
     cleaned_column_df = df.dropna(subset=column).reset_index(drop=True)
     return cleaned_column_df
 
-
+# aejecter dans un autre fichier
 def sort_contracttypes(contract_type):
     """
     To categorize all contracts type in 5 main types :
@@ -59,12 +56,7 @@ def sort_contracttypes(contract_type):
         return None
 
 
-url_wttj = "https://www.welcometothejungle.com/en" #to edit to link to the proper page
-url_adzuna = "https://www.adzuna.fr" #to edit to link to the proper page
-#st.write("check out this [link](%s)" % url)
-#st.markdown("check out this [link](%s)" % url)
-
-introduction = f"""Dans le cadre de la formation de Data Engineer par DataScientest au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.\n
+introduction = f"""Dans le cadre de la [formation de Data Engineer par DataScientest](https://datascientest.com/formation-data-engineer) au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.\n
 Voici le résultat de nos recherches sur les offres d'emplois de Data Engineer publiées en France au cours des 30 derniers jours.\n
 Nous avons récolté les annonces publiées sur [Welcome to The Jungle](https://www.welcometothejungle.com/en) et via l'[API d'Adzuna](https://www.adzuna.fr), deux aggrégateurs.
 Notre objectif est de répondre à ces 5 questions : 
@@ -82,7 +74,7 @@ tab0, tab1, tab2, tab3, tab4 = st.tabs(["Les secteurs qui recrutent le plus",
 
 with tab0:
     st.header("Quels secteurs recrutent le plus ?")
-    # géré par Jean
+    # géré par Jean 
 
 with tab1:
     st.header("Combien d'entreprises par secteur ont publié des annonces ?")
@@ -107,13 +99,12 @@ with tab2:
 with tab3:
     st.header("Quel est le contrat majoritairement proposé dans les annonces ? ")
 
-
-    def fetch_full_data(endpoint):
+    def fetch_data_contract(endpoint):
         print(f"{API_BASE_URL}/{endpoint}")
         response = requests.get(f"{API_BASE_URL}/{endpoint}")
         return pd.DataFrame(response.json(), columns=['contracttype', 'number_offer'])
 
-    all_contracts = fetch_full_data("joboffers_contracts")
+    all_contracts = fetch_data_contract("joboffers_contracts")
     # Worth mentionning, the nunique() method does NOT include the None values
     f"""Initialement, les {all_contracts.number_offer.sum()} annonces récupérées sont réparties en {all_contracts['contracttype'].nunique()} types de contrat possibles.\n"""
     unspecified_contracts = all_contracts.loc[all_contracts.contracttype.isnull(), ['number_offer']].values[0]
@@ -145,155 +136,102 @@ with tab3:
 with tab4:
     st.header("Quelle est la zone géographique avec le plus d'offres ?  _(à remplacer par Quelle est la répartition géographique des offres ?)_")
 
-
-    def fetch_full_data(endpoint):
+    def fetch_full_table_job_offers(endpoint):
         """
-        returns 
+        to complete 
         """
         response = requests.get(f"{API_BASE_URL}/{endpoint}")
         return pd.DataFrame(response.json())
 
-
     def fetch_location_coordinates(endpoint):
         """
-        returns 
+        to complete
         """
         response = requests.get(f"{API_BASE_URL}/{endpoint}")
         return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude'])
 
-    all_offers = fetch_full_data("joboffers")
+
+    # getting all the offers
+    all_offers = fetch_full_table_job_offers("joboffers")
     #all_offers
+    # getting latitude and longitude every unique location
     location_coordinates = fetch_location_coordinates("coordinates")
-    #location_coordinates
+    #location_coordinates 
+    
+    # affiche un planisfère de toute la largeur avec points rouges non proportionnels
     st.map(location_coordinates)
 
+    # nombre de "location" nulles
     unknown_locations = all_offers.location.isnull().sum()
+    f"Pour information sur les **{len(all_offers)} annonces récupérées**, seules {unknown_locations} ont été retirées faute de lieu précisé."
+    #unknown_coordinates = location_coordinates.latitude.isnull().sum()
+    #unknown_coordinates
+    #unknown_coordinates = location_coordinates.longitude.isnull().sum()
+    #unknown_coordinates
+    #on ne garde que les lignes où la 'location' est connue
     not_all_offers = all_offers.dropna(subset = ['location'])
 
+    #on crée un nouveau dataframe par merge en ajoutant les colonnes latitude et longitude aux dataframe complet de toutes les locations connues
     all_offers_located = pd.merge(not_all_offers, location_coordinates, on='location', how='left')
+    
+    # étrange
+    #len0 = len(location_coordinates)
+    #test = location_coordinates.isna().sum()
+    #test
+    #len1 = len(all_offers_located)
     all_offers_located = all_offers_located.dropna(subset=['latitude', 'longitude'])
-    # Display merged dataframe
-    #all_offers_located
-    #st.map(all_offers_located)
+    # len2 = len(all_offers_located)
+    # f"étrange len(location_coordinates) {len0} len(all_offers_located) est {len1} est différent de all_offers_located.dropna(subset=['latitude', 'longitude']) {len2}"
+    # f"avec erreur **StreamlitAPIException: Column latitude is not allowed to contain null values, such as NaN, NaT, or None.** si je ne fais pas de dropna"
+    # f"_______________"
+    # f"QUELLES SONT LES 2 LIGNES QUI ONT DISPARUES ?"
+    # f"_______________"
 
-    # ajout nombre d'offres
-    # ajout proportionalité taille via couleur
+
+    # Display merged dataframe
+    # all_offers_located
+    # st.map(all_offers_located)
+
     # ajout lien annonce
     # ajout lien url cliquable
     # ajout bouton pour centrer France métropolitaine
 
 
-
-    # ALTAIR FIRST TEST
-
-    import altair as alt
-    import matplotlib.pyplot as plt
-
-    print(alt.topo_feature('france_topo.json', 'feature').to_dict())
-
-    #a_com_topo = d3.json("https://static.data.gouv.fr/resources/contours-des-communes-de-france-simplifie-avec-regions-et-departement-doutre-mer-rapproches/20210523-101900/a-com2021-2154-topo.json")
-
-    # France GeoJSON data source
-    france_geojson_url = 'https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions.geojson'
-
-    # Create Altair's topo feature for France
-    france = alt.topo_feature(france_geojson_url, 'regions')
-
-
-    # France GeoJSON data source
-    france_geojson_url = 'https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions.geojson'
-
-    # Create a base map layer
-    base_map = alt.Chart(alt.Data(url=france_geojson_url)).mark_geoshape(
-        fill='lightgray',
-        stroke='white'
-    ).encode(
-        tooltip=['properties.nom:N']
-    ).properties(
-        width=600,
-        height=400
-    )
-
-    # Display the base map
-    #base_map
-
-
-    # TOPO FIRST TEST 
-    # 
-    # import topojson # install from https://github.com/sgillies
-    # import json
-    # 
-    # with open("france_topo.json") as json_file:
-    #     "bloud"
-    #     jdata = json_file.read()
-    #     topoJSON = json.loads(jdata)
-    # 
-    # topoJSON
-    # 
-    # with open("france_topo.json", 'r') as f:
-    #     data = json.load(f)
-    # # parse topojson file using `object_name`
-    # topo = topojson.Topology(data, object_name="data")
-    # topo.toposimplify(4).to_svg()
-
-
-
-    # PYDECK TEST 
-
-
-    import pydeck as pdk
-
-
-    # Defining the Latitude and Longite as 0 to centre the map
-    # setting it at the center of France
-    lat0=47.0
-    lon0=2.0
-    #zoom 4.3 to show Corsica completely
-    # other choice could be 
-    # location=[all_offers_located['latitude'].mean(), all_offers_located['longitude'].mean()]
-    # but because some offers are way over the map not fun 
-
-    legend="test"
-
-    st.pydeck_chart(pdk.Deck(
-        map_style=None,
-        initial_view_state=pdk.ViewState(
-            latitude=lat0,
-            longitude=lon0,
-            zoom=4.3,
-            pitch=20,
-            description=legend,
-        ),
-        
-        layers=[(pdk.Layer(
-        "ColumnLayer",
-        data=all_offers_located,
-        get_position='[longitude, latitude]',
-        elevation_scale=50,
-        pickable=True,
-        elevation_range=[50, 500],
-        get_fill_color=[180, 0, 200, 140],
-        extruded=True,
-        radius=25,
-        coverage=50,
-        auto_highlight=True,)
-    ),
-            pdk.Layer(
-                "GeoJsonLayer",
-                data=all_offers_located,
-                get_position='[longitude, latitude]',
-                get_color='[200, 30, 0, 160]',
-                #get_radius=20,
-            ),
-        ],
-    ))
-
-
     # PLOTLY TEST 
 
     # Group data by location and count number of job offers at each location
-    locations = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')
-    #locations
+    #locations = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')
+    # Adding count number of job offers at each location as the last columns 
+    # but strange car some are none 
+    all_offers_located.columns
+    all_offers_located.shape
+    all_offers_located["job_offer_count"] = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')["job_offer_count"]
+    test_correct_job_counts = all_offers_located.groupby('location').value_counts()
+    #st.write("\ntest_correct_job_counts : ")
+    #test_correct_job_counts
+
+    # grouping all_offers_located by the "location" column
+    all_offers_located
+    grouped_locations = all_offers_located.groupby('location')
+    #grouped_locations
+    # creating a dictionary using dictionary comprehension to access each offer for each location
+    data_by_location = {location: rest_of_the_offer for location, rest_of_the_offer in grouped_locations}
+    #data_by_location
+    #st.write(len(data_by_location))
+    #st.write(len(data_by_location.keys()))
+    st.write(data_by_location.keys())
+    st.write(data_by_location.values())
+    #st.write(len(data_by_location.values()))
+
+    data_by_location['Lyon, Rhône']
+    f'{type(data_by_location)}'
+    #data_by_location.iloc[0,:]
+    #len(data_by_location['Paris']['jobofferid'])
+
+    #all_offers_located
+    #incorrect_jo_count = all_offers_located['job_offer_count'].isnull().sum()
+    #incorrect_jo_count
+    #locations["job_offer_count"]
     #st.write(type(locations))
     #st.write(locations.columns)
 
@@ -307,29 +245,61 @@ with tab4:
     #location_counts
 
     #all_offers_located
+    #locations = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')
+    #locations = all_offers_located.groupby(['location', 'latitude', 'longitude']).count().reset_index(name='job_offer_count')
+    #all_offers_located['job_offer_count'] = all_offers_located.groupby(['location']).count()
+    #all_offers_located['job_offer_count'] = all_offers_located.groupby(['location', 'latitude', 'longitude']).agg({'location': 'nunique'}) #> TypeError: incompatible index of inserted column with frame index
+    
+    
+    #all_offers_located['job_offer_count'] = all_offers_located.groupby(['location', 'latitude', 'longitude']).nunique()
+    # test = all_offers_located.groupby(['location']).nunique()
+    # test
+    
+    #test = all_offers_located.groupby('location')['joblink'].apply(list)
+    #test
 
-
-    locations
+    #all_offers_located
+    #locations
     import plotly.express as px
     import plotly.graph_objects as go
 
-
-
+    #all_offers_located[all_offers_located["location"]==locations['location']] # > ValueError: Can only compare identically-labeled Series objects
+    #the_offer_to_display = all_offers_located["location"].reset_index(drop=True).equals(locations["location"].reset_index(drop=True))
+    #the_offer_to_display
     #px.set_mapbox_access_token(open(".mapbox_token").read())
 
     hover_data={'longitude':False, # remove longitude from hover data
                 'latitude':False, # remove latitude from hover data
                 'location':False,} # remove location from hover data
-                #"Lien vers l'annonce":True, # add other column, RESTE A FAIRE LIEN})
+                #"Lien annonce":data_by_location["location"]["joblink"]}
     #locations
-    fig = px.scatter_mapbox(locations, lat="latitude", lon="longitude", 
-                            hover_name= "location", hover_data=hover_data,
-                            color='job_offer_count', size='job_offer_count',
-                            color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
+    for key, values in data_by_location:
+        fig = px.scatter_mapbox(data_by_location[key], lat="latitude", lon="longitude", 
+                                hover_name="location", hover_data=hover_data,
+                                color="job_offer_count", size="job_offer_count",
+                                color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
 
-    fig.add_trace(go.Scatter(hovertemplate=
-                            "<b>%{hover_name}</b>" +
-                            "Nombres d'annonces %{job_offer_count}<br>",))
+
+    #fig.update_layout(autosize=True)
+    def _max_width_():
+        max_width_str = f"max-width: 2000px;"
+        st.markdown(
+            f"""
+        <style>
+        .reportview-container .main .block-container{{
+            {max_width_str}
+        }}
+        </style>    
+        """,
+            unsafe_allow_html=True,
+        )
+    _max_width_()
+    #px.defaults.width = 1000
+    #px.defaults.height = 500
+    #fig.update_layout(width=1000,height=600)
+    # fig.add_trace(px.scatter_mapbox(hovertemplate=
+    #                         "<b>%{hover_name}</b>" +
+    #                         "Nombres d'annonces %{job_offer_count}<br>",))
 
     fig.update_traces(marker_colorbar_showticklabels=False)
     #fig = go.Figure(go.Scattermapbox(hovertemplate=
