@@ -20,14 +20,19 @@ titre = "Projet Jobmarket : les offres d'emplois pour Data Engineers en France"
 st.title(titre)
 
 # a ejecter dans un autre fichier
-def clean_column_df(df, column):
+def clean_location_column(df):
     """
     to clean all rows where location is Null
     to know how many f"{all.isnull().value_counts()}"
     reset_index to make sure indexes pair with number of rows
     """
-    cleaned_column_df = df.dropna(subset=column).reset_index(drop=True)
-    return cleaned_column_df
+    #cleaned_column_df = df.dropna(subset=column).reset_index(drop=True)
+    location = df['location']
+    location_list_unique = set(str(location).lower().split())
+    #for name in location_list_unique:
+    #    print(name)
+    #df['location_cleaned'] = cleaned_location_column_df['location']
+    return location_list_unique
 
 # aejecter dans un autre fichier
 def sort_contracttypes(contract_type):
@@ -154,9 +159,11 @@ with tab4:
     # getting all the offers
     all_offers = fetch_full_table_job_offers("joboffers")
     #all_offers
+
     # getting latitude and longitude every unique location
     location_coordinates = fetch_location_coordinates("coordinates")
-    #location_coordinates 
+    #location_coordinates.shape
+    location_coordinates 
     
     # affiche un planisfère de toute la largeur avec points rouges non proportionnels
     st.map(location_coordinates)
@@ -164,33 +171,26 @@ with tab4:
     # nombre de "location" nulles
     unknown_locations = all_offers.location.isnull().sum()
     f"Pour information sur les **{len(all_offers)} annonces récupérées**, seules {unknown_locations} ont été retirées faute de lieu précisé."
-    #unknown_coordinates = location_coordinates.latitude.isnull().sum()
-    #unknown_coordinates
-    #unknown_coordinates = location_coordinates.longitude.isnull().sum()
-    #unknown_coordinates
     #on ne garde que les lignes où la 'location' est connue
     not_all_offers = all_offers.dropna(subset = ['location'])
+    not_all_offers
+    array_to_see = not_all_offers['location'].unique()
+    array_to_see
+    f"{len(array_to_see)} unique locations"
 
-    #on crée un nouveau dataframe par merge en ajoutant les colonnes latitude et longitude aux dataframe complet de toutes les locations connues
-    all_offers_located = pd.merge(not_all_offers, location_coordinates, on='location', how='left')
-    
-    # étrange
-    #len0 = len(location_coordinates)
-    #test = location_coordinates.isna().sum()
-    #test
-    #len1 = len(all_offers_located)
+
+    # on crée un nouveau dataframe par merge en ajoutant les colonnes latitude et longitude aux dataframe complet de toutes les locations connues
+    all_offers_located = not_all_offers.merge(location_coordinates[['location', 'latitude', 'longitude']], on='location', how='left')
+    all_offers_located
+    all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'latitude'] = 48.60533263495311
+    all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'longitude'] = 7.746870067373243
+    # étrange il semblerait qu'il y ait des lignes avec une latitude ou une longitude vide mais je ne les vois pas
+    #indeed avant quand je récupérais en direct je savais que Schiltigheim, Strasbourg-Campagne n'était pas trouvé
+    len1 = len(all_offers_located)
     all_offers_located = all_offers_located.dropna(subset=['latitude', 'longitude'])
-    # len2 = len(all_offers_located)
-    # f"étrange len(location_coordinates) {len0} len(all_offers_located) est {len1} est différent de all_offers_located.dropna(subset=['latitude', 'longitude']) {len2}"
-    # f"avec erreur **StreamlitAPIException: Column latitude is not allowed to contain null values, such as NaN, NaT, or None.** si je ne fais pas de dropna"
-    # f"_______________"
-    # f"QUELLES SONT LES 2 LIGNES QUI ONT DISPARUES ?"
-    # f"_______________"
-
-
-    # Display merged dataframe
-    # all_offers_located
-    # st.map(all_offers_located)
+    len2 = len(all_offers_located)
+    # vérification que tout est bien complété
+    len1==len2
 
     # ajout lien annonce
     # ajout lien url cliquable
@@ -200,18 +200,36 @@ with tab4:
     # PLOTLY TEST 
 
     # Group data by location and count number of job offers at each location
-    #locations = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')
+    locations = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')
+    'la table locations:'
+    locations
+    'les dimensions de la table locations:'
+    locations.shape
     # Adding count number of job offers at each location as the last columns 
     # but strange car some are none 
-    all_offers_located.columns
-    all_offers_located.shape
+    #all_offers_located.columns
+    #all_offers_located.shape
+    all_offers_located
     all_offers_located["job_offer_count"] = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')["job_offer_count"]
     test_correct_job_counts = all_offers_located.groupby('location').value_counts()
     #st.write("\ntest_correct_job_counts : ")
     #test_correct_job_counts
 
+    all_offers_double = all_offers_located
+    all_offers_double['location_cleaned'] = all_offers_double['location'].apply(lambda x : x.lower().replace(',','').split())
+    all_offers_double[['location','location_cleaned']]
+
+
+    #all_offers_located['location_cleaned'] = all_offers_located.loc[all_offers_located['location']].lower()
+    #
+    #locations = list(all_offers_located['location'])
+    ##locations.shape
+    #locations
+    #f'{type(locations)}'
+    #location_list_unique = sorted(set(str(locations).lower().split()))
+    #location_list_unique
+
     # grouping all_offers_located by the "location" column
-    all_offers_located
     grouped_locations = all_offers_located.groupby('location')
     #grouped_locations
     # creating a dictionary using dictionary comprehension to access each offer for each location
@@ -273,11 +291,11 @@ with tab4:
                 'location':False,} # remove location from hover data
                 #"Lien annonce":data_by_location["location"]["joblink"]}
     #locations
-    for key, values in data_by_location:
-        fig = px.scatter_mapbox(data_by_location[key], lat="latitude", lon="longitude", 
-                                hover_name="location", hover_data=hover_data,
-                                color="job_offer_count", size="job_offer_count",
-                                color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
+    #for key, values in data_by_location:
+    #    fig = px.scatter_mapbox(data_by_location[key], lat="latitude", lon="longitude", 
+    #                            hover_name="location", hover_data=hover_data,
+    #                            color="job_offer_count", size="job_offer_count",
+    #                            color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
 
 
     #fig.update_layout(autosize=True)

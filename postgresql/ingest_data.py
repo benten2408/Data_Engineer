@@ -143,8 +143,10 @@ def get_location_coordinates(address):
             #f"response {response}"
             longitude = response["features"][0]["geometry"]["coordinates"][0]
             latitude = response["features"][0]["geometry"]["coordinates"][1]
+            city = response["features"][0]["properties"]["city"]
+            postal_code = response["features"][0]["properties"]["postcode"]
             #f"location {address}  latitude {latitude}  longitude {longitude}"
-            return (latitude, longitude)
+            return (latitude, longitude, city, postal_code)
     except:
         f"Pour information, les coordonnées de l'adresse « {address} » n'ont pas pu être récupérées"
         return (None,None)
@@ -154,7 +156,7 @@ def create_csv_coordinates():
     df = concat_format_data()
     location = pd.DataFrame(df["location"].unique(), columns=["location"])
     location = location.dropna()
-    location["latitude"], location["longitude"] = zip(*location["location"].apply(lambda x : get_location_coordinates(x))) #axis = 0
+    location["latitude"], location["longitude"], location["city"],location["postal_code"] = zip(*location["location"].apply(lambda x : get_location_coordinates(x))) #axis = 0
     location.to_csv(os.path.join(DATA_TO_INGEST_FOLDER, 'locations.csv'), index=False)
 
 
