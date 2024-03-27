@@ -184,6 +184,8 @@ with tab4:
     all_offers_located
     all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'latitude'] = 48.60533263495311
     all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'longitude'] = 7.746870067373243
+    all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'postal_code'] = 67302
+    all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'city'] = "SCHILTIGHEIM".lower()
     # étrange il semblerait qu'il y ait des lignes avec une latitude ou une longitude vide mais je ne les vois pas
     #indeed avant quand je récupérais en direct je savais que Schiltigheim, Strasbourg-Campagne n'était pas trouvé
     len1 = len(all_offers_located)

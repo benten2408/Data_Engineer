@@ -63,6 +63,8 @@ def create_schema_query(cur):
             location VARCHAR(255),
             latitude DOUBLE PRECISION,
             longitude DOUBLE PRECISION,
+            city  VARCHAR(255),
+            postal_code VARCHAR(255),
             PRIMARY KEY (location)
         );
         """

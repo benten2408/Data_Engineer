@@ -149,14 +149,14 @@ def get_location_coordinates(address):
             return (latitude, longitude, city, postal_code)
     except:
         f"Pour information, les coordonnées de l'adresse « {address} » n'ont pas pu être récupérées"
-        return (None,None)
+        return (None,None, None, None)
 
 
 def create_csv_coordinates():
     df = concat_format_data()
     location = pd.DataFrame(df["location"].unique(), columns=["location"])
     location = location.dropna()
-    location["latitude"], location["longitude"], location["city"],location["postal_code"] = zip(*location["location"].apply(lambda x : get_location_coordinates(x))) #axis = 0
+    location["latitude"], location["longitude"], location["city"], location["postal_code"] = zip(*location["location"].apply(lambda x : get_location_coordinates(x))) #axis = 0
     location.to_csv(os.path.join(DATA_TO_INGEST_FOLDER, 'locations.csv'), index=False)
 
 
@@ -166,13 +166,13 @@ def get_or_create_location(cur, location_data):
     cur.execute("SELECT location FROM Locations WHERE location = %s;", (str(location_data["location"]),))
     result = cur.fetchone()
     if result is None:
-        cur.execute("INSERT INTO Locations (location, latitude, longitude) VALUES (%s, %s, %s);",location_data)
+        cur.execute("INSERT INTO Locations (location, latitude, longitude, city, postal_code) VALUES (%s, %s, %s, %s, %s);",location_data)
 
 
 def ingest_location(cur):
     df = pd.read_csv(os.path.join(DATA_TO_INGEST_FOLDER, 'locations.csv'))
     for _, row in df.iterrows():
-        get_or_create_location(cur, row) 
+        get_or_create_location(cur, row)
 
 
 def location_process(cur):
