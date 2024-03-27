@@ -5,6 +5,7 @@ from env_config import DATABASE
 def create_database_query(cur):
 
     cur.execute(f"DROP DATABASE IF EXISTS {DATABASE} WITH (force);")
+    print(f"Previous database '{DATABASE}' successfully dropped with force.")
     cur.execute(f"CREATE DATABASE {DATABASE};")
 
 
@@ -64,7 +65,7 @@ def create_schema_query(cur):
             latitude DOUBLE PRECISION,
             longitude DOUBLE PRECISION,
             city  VARCHAR(255),
-            postal_code VARCHAR(255),
+            postal_code NUMERIC,
             PRIMARY KEY (location)
         );
         """
