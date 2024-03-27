@@ -13,7 +13,7 @@ import json
 import time 
 import plotly.express as px
 import folium
-import data_cleaning
+#import data_cleaning
 
 API_BASE_URL = os.environ['API_BASE_URL']
 st.set_page_config(layout="wide")
@@ -350,7 +350,7 @@ with tab4:
     #all_offers_located[all_offers_located["location"]==locations['location']] # > ValueError: Can only compare identically-labeled Series objects
     #the_offer_to_display = all_offers_located["location"].reset_index(drop=True).equals(locations["location"].reset_index(drop=True))
     #the_offer_to_display
-    #px.set_mapbox_access_token(open(".mapbox_token").read())
+    px.set_mapbox_access_token(open(".mapbox_token").read())
 
     #for key, values in data_by_location:
     #    fig = px.scatter_mapbox(data_by_location[key], lat="latitude", lon="longitude", 
@@ -360,18 +360,32 @@ with tab4:
     #   
     "all_offers_located"
     all_offers_located
-    hover_data={"sum_of_job_offers":"sum_of_job_offers"} # remove longitude from hover data
-                #'latitude':False, # remove latitude from hover data
-                #'location':False,} # remove location from hover data
+
+    hover_data = {"sum_of_job_offers":True, # remove longitude from hover data
+                "Lien d'annonce":all_offers_located["joblink"],
+                'latitude':False, # remove latitude from hover data
+                'longitude':False, # remove latitude from hover data
+                'location':False} # remove location from hover data
                 #"Lien annonce":data_by_location["location"]["joblink"]}
     #locations
-    fig = px.scatter_mapbox(all_offers_located, lat="latitude", lon="longitude", 
+    fig = px.scatter_mapbox(all_offers_located, lat="latitude", lon="longitude",
                             hover_name="city", hover_data=hover_data,
                             color="sum_of_job_offers", size="sum_of_job_offers",
-                            color_continuous_scale=px.colors.sequential.Viridis)#, size_max=50, zoom=3)
+                            color_continuous_scale=px.colors.sequential.Viridis, size_max=20, zoom=4.5)
+
+    # my_customdata = []  # something you want to hover
+    # plot_data = [
+    #     go.Scattermapbox(
+    #     lon=all_offers_located["longitude"], 
+    #     lat=all_offers_located["latitude"], 
+    #     mode="markers", 
+    #     text=all_offers_located['city'], 
+    #     customdata=my_customdata,
+    #     hovertemplate="<b>%{text}</b><br><br>" + "longitude: %{lon:.2f}<br>" + "latitude: %{lat:.2f}<br>" + "altitude: %{customdata[0]:.0f}<br>"+ "ppm: %{marker.color:.2f}<extra></extra>",
+    # )]
 
 
-    #fig.update_layout(autosize=True)
+    fig.update_layout(autosize=True)
     #def _max_width_():
     #    max_width_str = f"max-width: 2000px;"
     #    st.markdown(
@@ -386,16 +400,17 @@ with tab4:
     #    )
     #_max_width_()
     #px.defaults.width = 1000
-    #px.defaults.height = 500
-    #fig.update_layout(width=1000,height=600)
-    # fig.add_trace(px.scatter_mapbox(hovertemplate=
-    #                         "<b>%{hover_name}</b>" +
-    #                         "Nombres d'annonces %{job_offer_count}<br>",))
+    #px.defaults.height = 800
+    #fig.update_layout(width=1000,height=1000)
+    #fig.add_trace(hovertemplate="<b>%{hover_name}</b>" + "Nombres d'annonces %{sum_of_job_offers}<br>",)
 
-    #fig.update_traces(marker_colorbar_showticklabels=False)
+    #fig.update_traces(marker_colorbar_showticklabels=True)
     #fig = go.Figure(go.Scattermapbox(hovertemplate=
     #                        "<b>%{hover_name}</b>" +
     #                        "Nombres d'annonces : %{job_offer_count}<br>",))
     #fig.update_layout(mapbox_style='open-street-map')
     #fig.update_layout(mapbox_style='outdoors')
+    #fig.update_layout(mapbox_style='light')
+    fig.update_layout(mapbox_style='streets')
+    #st.write(fig)
     st.plotly_chart(fig, use_container_width=True)
