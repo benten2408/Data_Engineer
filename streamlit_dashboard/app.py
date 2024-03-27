@@ -13,6 +13,7 @@ import json
 import time 
 import plotly.express as px
 import folium
+import data_cleaning
 
 API_BASE_URL = os.environ['API_BASE_URL']
 st.set_page_config(layout="wide")
@@ -67,9 +68,9 @@ Nous avons récolté les annonces publiées sur [Welcome to The Jungle](https://
 Notre objectif est de répondre à ces 5 questions : 
 - quels secteurs recrutent le plus ?
 - combien d'entreprises par secteur ont publié des annonces ?
-- quelles sont les \"skills\"  _(remplacer par compétences ?)_ les plus demandées ?
+- quelles sont les compétences les plus demandées ?
 - quel est le contrat majoritairement proposé dans les annonces ? 
-- quelle est la zone géographique avec le plus d'offres ?  _(remplacer par Quelle est la répartition géographique des offres ?)_"""
+- quelle est la zone géographique avec le plus d'offres ?_"""
 st.write(introduction)
 tab0, tab1, tab2, tab3, tab4 = st.tabs(["Les secteurs qui recrutent le plus",
                                         "Les entreprises par secteurs",
@@ -81,12 +82,13 @@ with tab0:
     st.header("Quels secteurs recrutent le plus ?")
     # géré par Jean 
 
+
 with tab1:
     st.header("Combien d'entreprises par secteur ont publié des annonces ?")
     # géré par Jean
 
 with tab2:
-    st.header("Quelles sont les \"skills\"  _(à remplacer par compétences ?)_ les plus demandées ?")
+    st.header("Quelles sont les compétences les plus demandées ?")
 
 
     def fetch_data_skills(endpoint):
@@ -139,7 +141,8 @@ with tab3:
 
 
 with tab4:
-    st.header("Quelle est la zone géographique avec le plus d'offres ?  _(à remplacer par Quelle est la répartition géographique des offres ?)_")
+    st.header("Quelle est la répartition géographique des offres ?")
+
 
     def fetch_full_table_job_offers(endpoint):
         """
@@ -148,44 +151,74 @@ with tab4:
         response = requests.get(f"{API_BASE_URL}/{endpoint}")
         return pd.DataFrame(response.json())
 
+
+    def fetch_full_table_job_offers_alternative(endpoint):
+        """
+        to complete 
+        """
+        response = requests.get(f"{API_BASE_URL}/{endpoint}")
+        f'{response}'
+        return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude'])
+
+
     def fetch_location_coordinates(endpoint):
         """
         to complete
         """
         response = requests.get(f"{API_BASE_URL}/{endpoint}")
-        return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude'])
+        return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude', 'city', 'postal_code'])
+
+    def fetch_full_location_coordinates(endpoint):
+        """
+        to complete
+        """
+        response = requests.get(f"{API_BASE_URL}/{endpoint}")
+        return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude', 'city', 'postal_code'])
 
 
     # getting all the offers
     all_offers = fetch_full_table_job_offers("joboffers")
-    #all_offers
-
+    "all_offers"
+    all_offers, all_offers.shape
+    #all_offers_alternative = fetch_full_table_job_offers_alternative("joboffers_alternative")
+    #all_offers_alternative
+    
     # getting latitude and longitude every unique location
-    location_coordinates = fetch_location_coordinates("coordinates")
+    location_coordinates = fetch_full_location_coordinates("coordinates_full")
     #location_coordinates.shape
-    location_coordinates 
+    "location_coordinates"
+    location_coordinates, location_coordinates.shape
     
     # affiche un planisfère de toute la largeur avec points rouges non proportionnels
     st.map(location_coordinates)
 
     # nombre de "location" nulles
     unknown_locations = all_offers.location.isnull().sum()
+    # attention voir si 'Schiltigheim, Strasbourg-Campagne' pose problème (alors 19 lignes à retirer) ou pas 
     f"Pour information sur les **{len(all_offers)} annonces récupérées**, seules {unknown_locations} ont été retirées faute de lieu précisé."
     #on ne garde que les lignes où la 'location' est connue
     not_all_offers = all_offers.dropna(subset = ['location'])
-    not_all_offers
-    array_to_see = not_all_offers['location'].unique()
-    array_to_see
-    f"{len(array_to_see)} unique locations"
+    'not_all_offers'
+    not_all_offers, not_all_offers.shape
+    
+    #array_to_see = not_all_offers['location'].unique()
+    #array_to_see
+    #f"{len(array_to_see)} unique locations"
 
 
     # on crée un nouveau dataframe par merge en ajoutant les colonnes latitude et longitude aux dataframe complet de toutes les locations connues
-    all_offers_located = not_all_offers.merge(location_coordinates[['location', 'latitude', 'longitude']], on='location', how='left')
+    all_offers_located = not_all_offers.merge(location_coordinates[['location', 'latitude', 'longitude', 'city', 'postal_code']], on='location', how='left')
+    'all_offers_located'
+    all_offers_located, all_offers_located.shape
+    all_offers_located.insert(18,"job_offer_count", [1 for _ in range(all_offers_located.shape[0])])
     all_offers_located
+
     all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'latitude'] = 48.60533263495311
     all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'longitude'] = 7.746870067373243
     all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'postal_code'] = 67302
-    all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'city'] = "SCHILTIGHEIM".lower()
+    all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'city'] = 'Schiltigheim'
+    #all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne']
+    #location["latitude"], location["longitude"], location["city"], location["postal_code"] = zip(*location["location"].apply(lambda x: (48.60, 7.74, 67302, "Schiltigheim") if x == "Schiltigheim, Strasbourg-Campagne" else (None, None, None, None)))
     # étrange il semblerait qu'il y ait des lignes avec une latitude ou une longitude vide mais je ne les vois pas
     #indeed avant quand je récupérais en direct je savais que Schiltigheim, Strasbourg-Campagne n'était pas trouvé
     len1 = len(all_offers_located)
@@ -202,24 +235,47 @@ with tab4:
     # PLOTLY TEST 
 
     # Group data by location and count number of job offers at each location
-    locations = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')
-    'la table locations:'
-    locations
-    'les dimensions de la table locations:'
-    locations.shape
+    #all_offers_located['job_offer_count'] = all_offers_located.groupby(['city']).size().reset_index(name='job_offer_count')['job_offer_count']
+    #" all_offers_located[['city','job_offer_count']]"
+    #all_offers_located[['city','job_offer_count']]
+    #"comment ça se fait qu'il ya des None ________________\n\n"
+    #all_offers_located['job_offer_count'].shape
+    #type(all_offers_located['job_offer_count'])
+    #locations = all_offers_located.groupby(['city']).size().reset_index(name='job_offer_count')
+    
+    
+    job_offer_count_sum = all_offers_located.groupby(by="city")["job_offer_count"].sum()
+
+
+    # First, convert the Series to a dictionary
+    job_offer_count_sum_dict = job_offer_count_sum.to_dict()
+
+    # Then, use the map function to create a new column based on the 'city' column
+    all_offers_located['sum_of_job_offers'] = all_offers_located['city'].map(job_offer_count_sum_dict)
+
+    #all_offers_located["job_offer_count"] = all_offers_located.groupby(by="city")["job_offer_count"].sum()
+    
+    'la table job_offer_count_sum:'
+    job_offer_count_sum
+    'les dimensions de la table job_offer_count_sum:'
+    job_offer_count_sum.shape
+    number_of_offers_with_location = job_offer_count_sum.sum()
+    ' ce qui représentent '
+    number_of_offers_with_location
+    'annonces'
     # Adding count number of job offers at each location as the last columns 
     # but strange car some are none 
     #all_offers_located.columns
     #all_offers_located.shape
-    all_offers_located
-    all_offers_located["job_offer_count"] = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')["job_offer_count"]
-    test_correct_job_counts = all_offers_located.groupby('location').value_counts()
+    #all_offers_located
+    #all_offers_located["job_offer_count"] = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')["job_offer_count"]
+    #test_correct_job_counts = all_offers_located.groupby('location').value_counts()
     #st.write("\ntest_correct_job_counts : ")
     #test_correct_job_counts
 
-    all_offers_double = all_offers_located
-    all_offers_double['location_cleaned'] = all_offers_double['location'].apply(lambda x : x.lower().replace(',','').split())
-    all_offers_double[['location','location_cleaned']]
+    #all_offers_double = all_offers_located
+    #all_offers_double['location_cleaned'] = all_offers_double['location'].apply(lambda x : x.lower().replace(',','').split())
+    #all_offers_double[['location','location_cleaned']]
 
 
     #all_offers_located['location_cleaned'] = all_offers_located.loc[all_offers_located['location']].lower()
@@ -232,19 +288,27 @@ with tab4:
     #location_list_unique
 
     # grouping all_offers_located by the "location" column
-    grouped_locations = all_offers_located.groupby('location')
-    #grouped_locations
-    # creating a dictionary using dictionary comprehension to access each offer for each location
-    data_by_location = {location: rest_of_the_offer for location, rest_of_the_offer in grouped_locations}
+    #locations['job_offer_count']
+    #all_offers_located["job_offer_count"] = locations['job_offer_count']
+    
+    
+    # autre technique via un dictionnaire
+    # grouped_locations = all_offers_located.groupby('city')
+    # grouped_locations
+    # f'{type(grouped_locations)}'
+    # # creating a dictionary using dictionary comprehension to access each offer for each location
+    # data_by_location = {location: rest_of_the_offer for location, rest_of_the_offer in grouped_locations}
+    # f'{type(data_by_location)}'
     #data_by_location
+
     #st.write(len(data_by_location))
     #st.write(len(data_by_location.keys()))
-    st.write(data_by_location.keys())
-    st.write(data_by_location.values())
+   # st.write(data_by_location.keys())
+   # st.write(data_by_location.values())
     #st.write(len(data_by_location.values()))
 
-    data_by_location['Lyon, Rhône']
-    f'{type(data_by_location)}'
+    # data_by_location['Lyon, Rhône']
+    # f'{type(data_by_location)}'
     #data_by_location.iloc[0,:]
     #len(data_by_location['Paris']['jobofferid'])
 
@@ -288,32 +352,39 @@ with tab4:
     #the_offer_to_display
     #px.set_mapbox_access_token(open(".mapbox_token").read())
 
-    hover_data={'longitude':False, # remove longitude from hover data
-                'latitude':False, # remove latitude from hover data
-                'location':False,} # remove location from hover data
-                #"Lien annonce":data_by_location["location"]["joblink"]}
-    #locations
     #for key, values in data_by_location:
     #    fig = px.scatter_mapbox(data_by_location[key], lat="latitude", lon="longitude", 
     #                            hover_name="location", hover_data=hover_data,
     #                            color="job_offer_count", size="job_offer_count",
     #                            color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
+    #   
+    "all_offers_located"
+    all_offers_located
+    hover_data={"sum_of_job_offers":"sum_of_job_offers"} # remove longitude from hover data
+                #'latitude':False, # remove latitude from hover data
+                #'location':False,} # remove location from hover data
+                #"Lien annonce":data_by_location["location"]["joblink"]}
+    #locations
+    fig = px.scatter_mapbox(all_offers_located, lat="latitude", lon="longitude", 
+                            hover_name="city", hover_data=hover_data,
+                            color="sum_of_job_offers", size="sum_of_job_offers",
+                            color_continuous_scale=px.colors.sequential.Viridis)#, size_max=50, zoom=3)
 
 
     #fig.update_layout(autosize=True)
-    def _max_width_():
-        max_width_str = f"max-width: 2000px;"
-        st.markdown(
-            f"""
-        <style>
-        .reportview-container .main .block-container{{
-            {max_width_str}
-        }}
-        </style>    
-        """,
-            unsafe_allow_html=True,
-        )
-    _max_width_()
+    #def _max_width_():
+    #    max_width_str = f"max-width: 2000px;"
+    #    st.markdown(
+    #        f"""
+    #    <style>
+    #    .reportview-container .main .block-container{{
+    #        {max_width_str}
+    #    }}
+    #    </style>    
+    #    """,
+    #        unsafe_allow_html=True,
+    #    )
+    #_max_width_()
     #px.defaults.width = 1000
     #px.defaults.height = 500
     #fig.update_layout(width=1000,height=600)
@@ -321,10 +392,10 @@ with tab4:
     #                         "<b>%{hover_name}</b>" +
     #                         "Nombres d'annonces %{job_offer_count}<br>",))
 
-    fig.update_traces(marker_colorbar_showticklabels=False)
+    #fig.update_traces(marker_colorbar_showticklabels=False)
     #fig = go.Figure(go.Scattermapbox(hovertemplate=
     #                        "<b>%{hover_name}</b>" +
     #                        "Nombres d'annonces : %{job_offer_count}<br>",))
     #fig.update_layout(mapbox_style='open-street-map')
-    fig.update_layout(mapbox_style='outdoors')
-    st.plotly_chart(fig, use_cotainer_width=True)
+    #fig.update_layout(mapbox_style='outdoors')
+    st.plotly_chart(fig, use_container_width=True)
