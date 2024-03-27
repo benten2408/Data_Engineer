@@ -59,280 +59,282 @@ def sort_contracttypes(contract_type):
         return None
 
 
-"""
-Dans le cadre de la formation de Data Engineer par DataScientest au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.\n
-Voici le résultat de nos recherches sur les offres d'emplois de Data Engineer  publiées en France au cours des 30 derniers jours.\n
-Nous avons récolté les annonces publiées sur Welcome to The Jungle et via l'API d'Adzuna, deux aggrégateurs. _(ajout lien url ?)_\n
-Ces données ont alimenté 5 tables : JobOffer_Skills, JobOffers, Skills, Sources, Companies. _(ajout diagramme UML ?)_\n
+url_wttj = "https://www.welcometothejungle.com/en" #to edit to link to the proper page
+url_adzuna = "https://www.adzuna.fr" #to edit to link to the proper page
+#st.write("check out this [link](%s)" % url)
+#st.markdown("check out this [link](%s)" % url)
 
-Notre objectif est de répondre à ces 5 questions  _(ajout lien cliquable ?)_: 
+introduction = f"""Dans le cadre de la formation de Data Engineer par DataScientest au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.\n
+Voici le résultat de nos recherches sur les offres d'emplois de Data Engineer publiées en France au cours des 30 derniers jours.\n
+Nous avons récolté les annonces publiées sur [Welcome to The Jungle](https://www.welcometothejungle.com/en) et via l'[API d'Adzuna](https://www.adzuna.fr), deux aggrégateurs.
+Notre objectif est de répondre à ces 5 questions : 
 - quels secteurs recrutent le plus ?
 - combien d'entreprises par secteur ont publié des annonces ?
-- quelles sont les "skills"  _(à remplacer par compétences ?)_ les plus demandées ?
+- quelles sont les \"skills\"  _(remplacer par compétences ?)_ les plus demandées ?
 - quel est le contrat majoritairement proposé dans les annonces ? 
-- quelle est la zone géographique avec le plus d'offres ?  _(à remplacer par Quelle est la répartition géographique des offres ?)_
-"""
+- quelle est la zone géographique avec le plus d'offres ?  _(remplacer par Quelle est la répartition géographique des offres ?)_"""
+st.write(introduction)
+tab0, tab1, tab2, tab3, tab4 = st.tabs(["Les secteurs qui recrutent le plus",
+                                        "Les entreprises par secteurs",
+                                        "Les compétences recherchées",
+                                        "Les contrats proposés",
+                                        "Les villes concernées"])
 
-#conn = psycopg2.connect(**st.secrets.db_params)
-#conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+with tab0:
+    st.header("Quels secteurs recrutent le plus ?")
+    # géré par Jean
 
-# Perform query
-# table_choisie = st.selectbox(
-#      'De quelle table souhaitez-vous voir un extrait ?',
-#      ('JobOffers', 'Companies', 'Sources', 'Skills', 'JobOffer_Skills'))
-# 
-# df = fetch_data("joboffer_skills/most-demand-skills")
-# query = f"SELECT * FROM {table_choisie};"
-# 
-# table_to_display = pd.read_sql(query, conn)
-# f"### Voici la table {table_choisie}"
-# st.dataframe(table_to_display)
-# "### une brève description avec la méthode describe() de pandas"
-# st.dataframe(table_to_display.describe(include="all"))
+with tab1:
+    st.header("Combien d'entreprises par secteur ont publié des annonces ?")
+    # géré par Jean
 
-"## Quels secteurs recrutent le plus ?"
-# géré par Jean
-
-"""
-## Combien d'entreprise par secteur ont publié des annonces ?
-"""
-# géré par Jean
-
-"""
-## Quelles sont les "skills" les plus demandées ?
-"""
-
-def fetch_data_skills(endpoint):
-    response = requests.get(f"{API_BASE_URL}/{endpoint}")
-    return pd.DataFrame(response.json(), columns=['skillname', 'nb_count'])
-
-df = fetch_data_skills("joboffer_skills/most-demand-skills").head(15)
-
-fig = px.bar(
-    df, x='skillname', y='nb_count', title='Top 15 des compétences les plus demandées',
-    labels={'skillname': 'Compétence', 'nb_count': 'Nombre de demandes'},
-    color='nb_count', color_continuous_scale=px.colors.sequential.Viridis
-)
-
-st.plotly_chart(fig)
-
-"""
-## Quel est le contrat majoritaire proposé dans les annonces ? 
-"""
-
-def fetch_full_data(endpoint):
-    print(f"{API_BASE_URL}/{endpoint}")
-    response = requests.get(f"{API_BASE_URL}/{endpoint}")
-    return pd.DataFrame(response.json(), columns=['contracttype', 'number_offer'])
-
-all_contracts = fetch_full_data("joboffers_contracts")
-# Worth mentionning, the nunique() method does NOT include the None values
-f"""Initialement, les {all_contracts.number_offer.sum()} annonces récupérées sont réparties en {all_contracts['contracttype'].nunique()} types de contrat possibles.\n"""
-unspecified_contracts = all_contracts.loc[all_contracts.contracttype.isnull(), ['number_offer']].values[0]
-
-all_contracts['contracttype'] = all_contracts['contracttype'].apply(lambda x : sort_contracttypes(x))
-unspecified_contracts += all_contracts.contracttype.isnull().sum()
-known_contracts = all_contracts.dropna(subset = ['contracttype'])
-result = known_contracts.groupby('contracttype')['number_offer'].sum().reset_index()
-result.sort_values('number_offer', inplace=True, ascending=False)
-f"""
-Pour une meilleure lisibilité, nous les avons rassemblées en 5 catégores* : \n
-- CDI
-- CDD
-- Freelance 
-- Alternance
-- Stage\n
-*sans compter donc les {int(unspecified_contracts)} annonces où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données."""
+with tab2:
+    st.header("Quelles sont les \"skills\"  _(à remplacer par compétences ?)_ les plus demandées ?")
 
 
-fig = px.bar(
-    result,  x="contracttype", y="number_offer", title='Les 5 contrats possibles',
-    labels={'contracttype': 'Contrats', 'number_offer': 'Nombre d\'annonces'},
-    text="number_offer",
-    color='number_offer', color_continuous_scale=px.colors.sequential.Viridis
-)
+    def fetch_data_skills(endpoint):
+        response = requests.get(f"{API_BASE_URL}/{endpoint}")
+        return pd.DataFrame(response.json(), columns=['skillname', 'nb_count'])
 
-st.plotly_chart(fig)
-
-"""
-## Quelle est la zone avec le plus d'offres ?
-"""
-# géré par Elsa
-# (format probable carte avec cercles proportionnelles au nombre d'offres)
+    df = fetch_data_skills("joboffer_skills/most-demand-skills").head(15)
+    fig = px.bar(df, x='skillname', y='nb_count', 
+                 title='Top 15 des compétences les plus demandées',
+                 labels={'skillname': 'Compétence', 'nb_count': 'Nombre de demandes'},
+                 color='nb_count', color_continuous_scale=px.colors.sequential.Viridis)
+    st.plotly_chart(fig)
 
 
-def fetch_full_data(endpoint):
-    """
-    returns 
-    """
-    response = requests.get(f"{API_BASE_URL}/{endpoint}")
-    return pd.DataFrame(response.json())
+with tab3:
+    st.header("Quel est le contrat majoritairement proposé dans les annonces ? ")
 
 
-def fetch_location_coordinates(endpoint):
-    """
-    returns 
-    """
-    
-    response = requests.get(f"{API_BASE_URL}/{endpoint}")
-    return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude'])
+    def fetch_full_data(endpoint):
+        print(f"{API_BASE_URL}/{endpoint}")
+        response = requests.get(f"{API_BASE_URL}/{endpoint}")
+        return pd.DataFrame(response.json(), columns=['contracttype', 'number_offer'])
 
-all_offers = fetch_full_data("joboffers")
-#all_offers
-location_coordinates = fetch_location_coordinates("coordinates")
-#location_coordinates
-st.map(location_coordinates)
+    all_contracts = fetch_full_data("joboffers_contracts")
+    # Worth mentionning, the nunique() method does NOT include the None values
+    f"""Initialement, les {all_contracts.number_offer.sum()} annonces récupérées sont réparties en {all_contracts['contracttype'].nunique()} types de contrat possibles.\n"""
+    unspecified_contracts = all_contracts.loc[all_contracts.contracttype.isnull(), ['number_offer']].values[0]
 
-unknown_locations = all_offers.location.isnull().sum()
-not_all_offers = all_offers.dropna(subset = ['location'])
+    all_contracts['contracttype'] = all_contracts['contracttype'].apply(lambda x : sort_contracttypes(x))
+    unspecified_contracts += all_contracts.contracttype.isnull().sum()
+    known_contracts = all_contracts.dropna(subset = ['contracttype'])
+    result = known_contracts.groupby('contracttype')['number_offer'].sum().reset_index()
+    result.sort_values('number_offer', inplace=True, ascending=False)
+    f"""
+    Pour une meilleure lisibilité, nous les avons rassemblées en 5 catégores* : \n
+    - CDI
+    - CDD
+    - Freelance 
+    - Alternance
+    - Stage\n
+    *sans compter donc les {int(unspecified_contracts)} annonces où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données."""
 
-all_offers_located = pd.merge(not_all_offers, location_coordinates, on='location', how='left')
-all_offers_located = all_offers_located.dropna(subset=['latitude', 'longitude'])
-# Display merged dataframe
-#all_offers_located
-#st.map(all_offers_located)
+    fig = px.bar(
+        result,  x="contracttype", y="number_offer", title='Les 5 contrats possibles',
+        labels={'contracttype': 'Contrats', 'number_offer': 'Nombre d\'annonces'},
+        text="number_offer",
+        color='number_offer', color_continuous_scale=px.colors.sequential.Viridis
+    )
 
-# ajout nombre d'offres
-# ajout proportionalité taille via couleur
-# ajout lien annonce
-# ajout lien url cliquable
-# ajout bouton pour centrer France métropolitaine
+    st.plotly_chart(fig)
+
+
+with tab4:
+    st.header("Quelle est la zone géographique avec le plus d'offres ?  _(à remplacer par Quelle est la répartition géographique des offres ?)_")
+
+
+    def fetch_full_data(endpoint):
+        """
+        returns 
+        """
+        response = requests.get(f"{API_BASE_URL}/{endpoint}")
+        return pd.DataFrame(response.json())
+
+
+    def fetch_location_coordinates(endpoint):
+        """
+        returns 
+        """
+        response = requests.get(f"{API_BASE_URL}/{endpoint}")
+        return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude'])
+
+    all_offers = fetch_full_data("joboffers")
+    #all_offers
+    location_coordinates = fetch_location_coordinates("coordinates")
+    #location_coordinates
+    st.map(location_coordinates)
+
+    unknown_locations = all_offers.location.isnull().sum()
+    not_all_offers = all_offers.dropna(subset = ['location'])
+
+    all_offers_located = pd.merge(not_all_offers, location_coordinates, on='location', how='left')
+    all_offers_located = all_offers_located.dropna(subset=['latitude', 'longitude'])
+    # Display merged dataframe
+    #all_offers_located
+    #st.map(all_offers_located)
+
+    # ajout nombre d'offres
+    # ajout proportionalité taille via couleur
+    # ajout lien annonce
+    # ajout lien url cliquable
+    # ajout bouton pour centrer France métropolitaine
 
 
 
-# ALTAIR FIRST TEST
+    # ALTAIR FIRST TEST
 
-import altair as alt
-import matplotlib.pyplot as plt
+    import altair as alt
+    import matplotlib.pyplot as plt
 
-print(alt.topo_feature('france_topo.json', 'feature').to_dict())
+    print(alt.topo_feature('france_topo.json', 'feature').to_dict())
 
-#a_com_topo = d3.json("https://static.data.gouv.fr/resources/contours-des-communes-de-france-simplifie-avec-regions-et-departement-doutre-mer-rapproches/20210523-101900/a-com2021-2154-topo.json")
+    #a_com_topo = d3.json("https://static.data.gouv.fr/resources/contours-des-communes-de-france-simplifie-avec-regions-et-departement-doutre-mer-rapproches/20210523-101900/a-com2021-2154-topo.json")
 
-# France GeoJSON data source
-france_geojson_url = 'https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions.geojson'
+    # France GeoJSON data source
+    france_geojson_url = 'https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions.geojson'
 
-# Create Altair's topo feature for France
-france = alt.topo_feature(france_geojson_url, 'regions')
-
-
-# France GeoJSON data source
-france_geojson_url = 'https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions.geojson'
-
-# Create a base map layer
-base_map = alt.Chart(alt.Data(url=france_geojson_url)).mark_geoshape(
-    fill='lightgray',
-    stroke='white'
-).encode(
-    tooltip=['properties.nom:N']
-).properties(
-    width=600,
-    height=400
-)
-
-# Display the base map
-#base_map
+    # Create Altair's topo feature for France
+    france = alt.topo_feature(france_geojson_url, 'regions')
 
 
-# TOPO FIRST TEST 
-# 
-# import topojson # install from https://github.com/sgillies
-# import json
-# 
-# with open("france_topo.json") as json_file:
-#     "bloud"
-#     jdata = json_file.read()
-#     topoJSON = json.loads(jdata)
-# 
-# topoJSON
-# 
-# with open("france_topo.json", 'r') as f:
-#     data = json.load(f)
-# # parse topojson file using `object_name`
-# topo = topojson.Topology(data, object_name="data")
-# topo.toposimplify(4).to_svg()
+    # France GeoJSON data source
+    france_geojson_url = 'https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions.geojson'
+
+    # Create a base map layer
+    base_map = alt.Chart(alt.Data(url=france_geojson_url)).mark_geoshape(
+        fill='lightgray',
+        stroke='white'
+    ).encode(
+        tooltip=['properties.nom:N']
+    ).properties(
+        width=600,
+        height=400
+    )
+
+    # Display the base map
+    #base_map
+
+
+    # TOPO FIRST TEST 
+    # 
+    # import topojson # install from https://github.com/sgillies
+    # import json
+    # 
+    # with open("france_topo.json") as json_file:
+    #     "bloud"
+    #     jdata = json_file.read()
+    #     topoJSON = json.loads(jdata)
+    # 
+    # topoJSON
+    # 
+    # with open("france_topo.json", 'r') as f:
+    #     data = json.load(f)
+    # # parse topojson file using `object_name`
+    # topo = topojson.Topology(data, object_name="data")
+    # topo.toposimplify(4).to_svg()
 
 
 
-# PYDECK TEST 
+    # PYDECK TEST 
 
 
-import pydeck as pdk
+    import pydeck as pdk
 
 
-# Defining the Latitude and Longite as 0 to centre the map
-# setting it at the center of France
-lat0=47.0
-lon0=2.0
-#zoom 4.3 to show Corsica completely
-# other choice could be 
-# location=[all_offers_located['latitude'].mean(), all_offers_located['longitude'].mean()]
-# but because some offers are way over the map not fun 
+    # Defining the Latitude and Longite as 0 to centre the map
+    # setting it at the center of France
+    lat0=47.0
+    lon0=2.0
+    #zoom 4.3 to show Corsica completely
+    # other choice could be 
+    # location=[all_offers_located['latitude'].mean(), all_offers_located['longitude'].mean()]
+    # but because some offers are way over the map not fun 
 
-legend="test"
+    legend="test"
 
-st.pydeck_chart(pdk.Deck(
-    map_style=None,
-    initial_view_state=pdk.ViewState(
-        latitude=lat0,
-        longitude=lon0,
-        zoom=4.3,
-        pitch=20,
-        description=legend,
-    ),
-    
-    layers=[(pdk.Layer(
-    "ColumnLayer",
-    data=all_offers_located,
-    get_position='[longitude, latitude]',
-    elevation_scale=50,
-    pickable=True,
-    elevation_range=[50, 500],
-    get_fill_color=[180, 0, 200, 140],
-    extruded=True,
-    radius=25,
-    coverage=50,
-    auto_highlight=True,)
-),
-        pdk.Layer(
-            "GeoJsonLayer",
-            data=all_offers_located,
-            get_position='[longitude, latitude]',
-            get_color='[200, 30, 0, 160]',
-            #get_radius=20,
+    st.pydeck_chart(pdk.Deck(
+        map_style=None,
+        initial_view_state=pdk.ViewState(
+            latitude=lat0,
+            longitude=lon0,
+            zoom=4.3,
+            pitch=20,
+            description=legend,
         ),
-    ],
-))
+        
+        layers=[(pdk.Layer(
+        "ColumnLayer",
+        data=all_offers_located,
+        get_position='[longitude, latitude]',
+        elevation_scale=50,
+        pickable=True,
+        elevation_range=[50, 500],
+        get_fill_color=[180, 0, 200, 140],
+        extruded=True,
+        radius=25,
+        coverage=50,
+        auto_highlight=True,)
+    ),
+            pdk.Layer(
+                "GeoJsonLayer",
+                data=all_offers_located,
+                get_position='[longitude, latitude]',
+                get_color='[200, 30, 0, 160]',
+                #get_radius=20,
+            ),
+        ],
+    ))
 
 
-# PLOTLY TEST 
+    # PLOTLY TEST 
 
-# Group data by location and count number of job offers at each location
-locations = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')
-#locations
-#st.write(type(locations))
-#st.write(locations.columns)
+    # Group data by location and count number of job offers at each location
+    locations = all_offers_located.groupby(['location', 'latitude', 'longitude']).size().reset_index(name='job_offer_count')
+    #locations
+    #st.write(type(locations))
+    #st.write(locations.columns)
 
-# Calculate marker size proportional to the number of job offers
-#max_job_offers = locations['job_offer_count'].max()
-#max_job_offers
-#scaling_factor = 10  # Adjust as needed
-#locations['marker_size'] = (locations['job_offer_count'] / max_job_offers) * scaling_factor
-#all_offers_located['job_offer_count'] = locations['job_offer_count'].copy()
-#all_offers_located['marker_size'] = locations["marker_size"].copy()
-#location_counts
+    # Calculate marker size proportional to the number of job offers
+    #max_job_offers = locations['job_offer_count'].max()
+    #max_job_offers
+    #scaling_factor = 10  # Adjust as needed
+    #locations['marker_size'] = (locations['job_offer_count'] / max_job_offers) * scaling_factor
+    #all_offers_located['job_offer_count'] = locations['job_offer_count'].copy()
+    #all_offers_located['marker_size'] = locations["marker_size"].copy()
+    #location_counts
 
-#all_offers_located
-
-
-
-import plotly.express as px
+    #all_offers_located
 
 
-#px.set_mapbox_access_token(open(".mapbox_token").read())
+    locations
+    import plotly.express as px
+    import plotly.graph_objects as go
 
-#locations
-fig = px.scatter_mapbox(locations, lat="latitude", lon="longitude", hover_name= "location", color='job_offer_count', size='job_offer_count',
-                  color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
-fig.update_layout(mapbox_style='open-street-map')
-st.plotly_chart(fig, use_cotainer_width=True)
+
+
+    #px.set_mapbox_access_token(open(".mapbox_token").read())
+
+    hover_data={'longitude':False, # remove longitude from hover data
+                'latitude':False, # remove latitude from hover data
+                'location':False,} # remove location from hover data
+                #"Lien vers l'annonce":True, # add other column, RESTE A FAIRE LIEN})
+    #locations
+    fig = px.scatter_mapbox(locations, lat="latitude", lon="longitude", 
+                            hover_name= "location", hover_data=hover_data,
+                            color='job_offer_count', size='job_offer_count',
+                            color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
+
+    fig.add_trace(go.Scatter(hovertemplate=
+                            "<b>%{hover_name}</b>" +
+                            "Nombres d'annonces %{job_offer_count}<br>",))
+
+    fig.update_traces(marker_colorbar_showticklabels=False)
+    #fig = go.Figure(go.Scattermapbox(hovertemplate=
+    #                        "<b>%{hover_name}</b>" +
+    #                        "Nombres d'annonces : %{job_offer_count}<br>",))
+    #fig.update_layout(mapbox_style='open-street-map')
+    fig.update_layout(mapbox_style='outdoors')
+    st.plotly_chart(fig, use_cotainer_width=True)
