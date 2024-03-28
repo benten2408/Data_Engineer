@@ -67,15 +67,15 @@ def sort_contracttypes(contract_type):
 def run():
     titre = "Projet Jobmarket : les offres d'emplois pour Data Engineers en France"
     st.title(titre)
-    introduction = f"""Dans le cadre de la [formation de Data Engineer par DataScientest](https://datascientest.com/formation-data-engineer) au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.\n
-    Voici le résultat de nos recherches sur les offres d'emplois de Data Engineer publiées en France au cours des 30 derniers jours.\n
-    Nous avons récolté les annonces publiées sur [Welcome to The Jungle](https://www.welcometothejungle.com/en) et via l'[API d'Adzuna](https://www.adzuna.fr), deux aggrégateurs.
-    Notre objectif est de répondre à ces 5 questions : 
-    - quels secteurs recrutent le plus ?
-    - combien d'entreprises par secteur ont publié des annonces ?
-    - quelles sont les compétences les plus demandées ?
-    - quel est le contrat majoritairement proposé dans les annonces ? 
-    - quelle est la zone géographique avec le plus d'offres ?"""
+    introduction = "Dans le cadre de la [formation de Data Engineer par DataScientest](https://datascientest.com/formation-data-engineer) au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.  \n \
+    Voici le résultat de nos recherches sur les **offres d\'emplois de Data Engineer publiées en France au cours des 30 derniers jours**.  \n \
+    Nous avons récolté les annonces publiées sur [Welcome to The Jungle](https://www.welcometothejungle.com/en) et via l'[API d'Adzuna](https://www.adzuna.fr), deux aggrégateurs.  \n \
+    Notre objectif est de répondre à ces 5 questions :   \n \
+          \t - quels secteurs recrutent le plus ?   \n \
+          \t - combien d\'entreprises par secteur ont publié des annonces ?   \n \
+          \t - quelles sont les compétences les plus demandées ?   \n \
+          \t - quel est le contrat majoritairement proposé dans les annonces ?   \n \
+          \t - quelle est la zone géographique avec le plus d\'offres ?  \n "
     st.write(introduction)
     tab0, tab1, tab2, tab3, tab4 = st.tabs(["Les secteurs qui recrutent le plus",
                                             "Les entreprises par secteurs",
@@ -112,38 +112,52 @@ def run():
     with tab3:
         st.header("Quel est le contrat majoritairement proposé dans les annonces ?")
 
+        col0, col1 = st.columns(2)
+
         def fetch_data_contract(endpoint):
             print(f"{API_BASE_URL}/{endpoint}")
             response = requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers)
             return pd.DataFrame(response.json(), columns=['contracttype', 'number_offer'])
 
         all_contracts = fetch_data_contract("joboffers_contracts")
-        # Worth mentionning, the nunique() method does NOT include the None values
-        f"""Initialement, les {all_contracts.number_offer.sum()} annonces récupérées sont réparties en {all_contracts['contracttype'].nunique()} types de contrat possibles.\n"""
-        unspecified_contracts = all_contracts.loc[all_contracts.contracttype.isnull(), ['number_offer']].values[0]
+        with col0:
+            # Worth mentionning, the nunique() method does NOT include the None values
+            st.write(f"Initialement, les {all_contracts.number_offer.sum()} annonces récupérées sont réparties en {all_contracts['contracttype'].nunique()} types de contrat possibles.\n")
+            unspecified_contracts = all_contracts.loc[all_contracts.contracttype.isnull(), ['number_offer']].values[0]
 
-        all_contracts['contracttype'] = all_contracts['contracttype'].apply(lambda x : sort_contracttypes(x))
-        unspecified_contracts += all_contracts.contracttype.isnull().sum()
-        known_contracts = all_contracts.dropna(subset = ['contracttype'])
-        result = known_contracts.groupby('contracttype')['number_offer'].sum().reset_index()
-        result.sort_values('number_offer', inplace=True, ascending=False)
-        f"""
-        Pour une meilleure lisibilité, nous les avons rassemblées en 5 catégores* : \n
-        - CDI
-        - CDD
-        - Freelance 
-        - Alternance
-        - Stage\n
-        *sans compter donc les {int(unspecified_contracts)} annonces où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données."""
+            all_contracts['contracttype'] = all_contracts['contracttype'].apply(lambda x : sort_contracttypes(x))
+            unspecified_contracts += all_contracts.contracttype.isnull().sum()
+            known_contracts = all_contracts.dropna(subset = ['contracttype'])
+            result = known_contracts.groupby('contracttype')['number_offer'].sum().reset_index()
+            result.sort_values('number_offer', inplace=True, ascending=False)
+            st.write(f"\
+            Pour une meilleure lisibilité, nous les avons rassemblées en 5 catégories* : \n \
+            - CDI \
+            - CDD \
+            - Freelance \
+            - Alternance \
+            - Stage\n \
+            *sans compter donc les {int(unspecified_contracts)} annonces où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données.")
 
-        fig = px.bar(
-            result,  x="contracttype", y="number_offer", title='Les 5 contrats possibles',
-            labels={'contracttype': 'Contrats', 'number_offer': 'Nombre d\'annonces'},
-            text="number_offer",
-            color='number_offer', color_continuous_scale=px.colors.sequential.Viridis
-        )
-        fig.update_layout(autosize=True)
-        st.plotly_chart(fig)
+       
+
+        with col1:
+            #fig = px.pie(
+            #    result,  names="contracttype", values="number_offer", title='Les 5 contrats possibles',
+            #    color='number_offer', color_discrete_sequence=px.colors.sequential.Viridis,
+            #    labels={'contracttype': 'Contrats', 'number_offer': 'Nombre d\'annonces'}, hover_data=['number_offer'],
+            #)
+            ##fig.update_traces(textposition='inside', textinfo='labels')
+            #st.plotly_chart(fig)
+
+            fig = px.bar(
+                result,  x="contracttype", y="number_offer", title='Les 5 contrats possibles',
+                labels={'contracttype': 'Contrats', 'number_offer': 'Nombre d\'annonces'},
+                text="number_offer",
+                color='number_offer', color_continuous_scale=px.colors.sequential.Viridis
+            )
+            fig.update_layout(autosize=True)
+            st.plotly_chart(fig)
 
     with tab4:
         st.header("Quelle est la répartition géographique des offres ?")
@@ -183,7 +197,7 @@ def run():
         
         # getting latitude, longitude, city every unique location
         location_coordinates = fetch_full_location_coordinates("coordinates_full")
-        #st.dataframe(location_coordinates)
+        st.dataframe(location_coordinates)
 
         # affiche un planisfère de toute la largeur avec points rouges non proportionnels
         #st.map(location_coordinates)
@@ -219,6 +233,20 @@ def run():
         # vérification que tout est bien complété
         #len1==len2
 
+        all_offers_located.loc[all_offers_located['location'].str.contains('Paris'), 'city'] = 'Paris'
+
+        city_mean_coordinates = all_offers_located.groupby('city').agg({'latitude': 'mean', 'longitude': 'mean'}).reset_index()
+
+        # Merge mean coordinates with original DataFrame on 'city'
+        all_offers_located = all_offers_located.merge(city_mean_coordinates, on='city', suffixes=('', '_mean'))
+
+        # Update latitude and longitude columns with mean values
+        all_offers_located['latitude'] = all_offers_located['latitude_mean']
+        all_offers_located['longitude'] = all_offers_located['longitude_mean']
+        # Drop redundant columns
+        all_offers_located.drop(['latitude_mean', 'longitude_mean'], axis=1, inplace=True)
+
+
         job_offer_count_sum = all_offers_located.groupby(by="city")["job_offer_count"].sum()
         job_offer_count_sum_dict = job_offer_count_sum.to_dict()
 
@@ -230,10 +258,10 @@ def run():
         #all_offers_located['list_of_joblinks'] = all_offers_located['city'].map(job_offer_link_dict)
 
         # Calculate marker size proportional to the number of job offers
-        #max_job_offers = locations['job_offer_count'].max()
+        max_job_offers = all_offers_located['sum_of_job_offers'].max()
         #max_job_offers
-        #scaling_factor = 10  # Adjust as needed
-        #locations['marker_size'] = (locations['job_offer_count'] / max_job_offers) * scaling_factor
+        scaling_factor = 10  # Adjust as needed
+        all_offers_located['marker_size'] = (all_offers_located['sum_of_job_offers'] / max_job_offers) * scaling_factor
         #all_offers_located['job_offer_count'] = locations['job_offer_count'].copy()
         #all_offers_located['marker_size'] = locations["marker_size"].copy()
         #location_counts
@@ -259,7 +287,8 @@ def run():
                                 hover_name="city", hover_data=hover_data,
                                 color="sum_of_job_offers", size="sum_of_job_offers",
                                 color_continuous_scale=px.colors.sequential.Viridis, 
-                                size_max=20, zoom=4.5)# à améliorer pour mieux gérer la taille de départ qui ne doit pas être minuscule
+                                size_max=50, zoom=4.5)# à améliorer pour mieux gérer la taille de départ qui ne doit pas être minuscule
+
 
         # my_customdata = []  # something you want to hover
         # plot_data = [
@@ -272,7 +301,7 @@ def run():
         #     hovertemplate="<b>%{text}</b><br><br>" + "longitude: %{lon:.2f}<br>" + "latitude: %{lat:.2f}<br>" + "altitude: %{customdata[0]:.0f}<br>"+ "ppm: %{marker.color:.2f}<extra></extra>",
         # )]
 
-        #fig.update_layout(autosize=True)
+        fig.update_layout(autosize=True)
 
         #fig.update_layout(mapbox_style='open-street-map')
         #fig.update_layout(mapbox_style='outdoors')
@@ -286,7 +315,7 @@ def run():
         #height = st.sidebar.slider("plot height", 100, 1000, 10)
         #fig.update_layout(width=width, height=height)
 
-        fig.update_layout(width=1000, height=800)
+        #fig.update_layout(width=1000, height=800)
         st.plotly_chart(fig)
 
     # ajout lien annonce
