@@ -179,3 +179,20 @@ def ingest_location(cur):
 def location_process(cur):
 	create_csv_coordinates()
 	ingest_location(cur)
+
+
+def get_or_create_user(cur, user, password):
+    pass
+	"""
+     response = requests.get(url).json()
+		if response:
+          
+    cur.execute("SELECT * FROM Users WHERE username = %s;", (username,))
+    result = cur.fetchone()
+    if result:
+        return result[0]
+    else:
+        cur.execute("INSERT INTO Users (username, password) VALUES (%s, %s);",
+                    (user, password))
+        return cur.fetchone()[0] 
+        """

@@ -57,6 +57,7 @@ class DatabaseManager:
 		ingest_skills_query(cur)
 		ingest_joboffers_query(cur)
 		location_process(cur)
+		get_or_create_user(cur) # comment passer user and password
 
 		print(f"Data ingested in {DATABASE} successfully.")
 
