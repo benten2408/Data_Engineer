@@ -21,3 +21,10 @@ API_ID = config('API_ID')
 
 ## Data to ingest folder ##
 DATA_TO_INGEST_FOLDER = os.path.join(BASE_DIR, 'postgresql', 'data_to_ingest')
+
+## API backend ##
+TEST_USERNAME = config('TEST_USERNAME')
+TEST_PASSWORD = config('TEST_PASSWORD')
+ALGORITHM = config('ALGORITHM')
+ACCESS_TOKEN_EXPIRE_MINUTES = config('ACCESS_TOKEN_EXPIRE_MINUTES')
+SECRET_KEY = config('SECRET_KEY')

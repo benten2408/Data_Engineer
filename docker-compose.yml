@@ -47,7 +47,30 @@ services:
       - DATABASE=${DATABASE}
       - DOCKER_POSTGRES_HOST=${DOCKER_POSTGRES_HOST}
       - PORT=${PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - TEST_USERNAME=${TEST_USERNAME}
+      - TEST_PASSWORD=${TEST_PASSWORD}
     container_name: api_backend
+  
+  test_api_backend:
+    build: ./api_backend
+    volumes:
+      - "./api_backend:/usr/src/app"
+    restart: always
+    environment:
+      - WATCHFILES_FORCE_POLLING=true
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE=${DATABASE}
+      - DOCKER_POSTGRES_HOST=${DOCKER_POSTGRES_HOST}
+      - PORT=${PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - TEST_USERNAME=${TEST_USERNAME}
+      - TEST_PASSWORD=${TEST_PASSWORD}
 
 volumes:
   postgres-data:
