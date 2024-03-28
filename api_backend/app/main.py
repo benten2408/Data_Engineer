@@ -31,6 +31,7 @@ db_params = {
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+
 def get_db_connection():
     conn = psycopg2.connect(**db_params)
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
@@ -42,6 +43,7 @@ def get_user(db, username: str):
         user_dict = db[username]
         return user_dict
 
+
 def authenticate_user(users_db, username: str, password: str):
     user = get_user(users_db, username)
     if not user:
@@ -49,6 +51,7 @@ def authenticate_user(users_db, username: str, password: str):
     if not verify_password(password, user['hashed_password']):
         return False
     return user
+
 
 @api.post("/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
@@ -62,6 +65,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     access_token = create_access_token(data={"sub": user['username']})
     return {"access_token": access_token, "token_type": "bearer"}
 
+
 def token_present(token: str = Security(oauth2_scheme)):
     if not token:
         raise HTTPException(
@@ -70,9 +74,11 @@ def token_present(token: str = Security(oauth2_scheme)):
         )
     return True
 
+
 @api.get("/secure")
 def secure(token_checked: bool = Depends(token_present)):
     return {"message": f"Access is {token_checked}"}
+
 
 @api.get("/")
 def get_index():
@@ -84,12 +90,14 @@ def get_index():
             "message": "Bienvenue sur l'API Job Market"
         }
 
+
 @api.get("/companies")
 async def get_companies(token_checked: bool = Depends(token_present)):
 	conn = get_db_connection()
 	companies = pd.read_sql("SELECT * FROM companies", conn)
 	conn.close()
 	return companies.to_dict(orient="records")
+
 
 @api.get("/skills")
 async def get_skills(token_checked: bool = Depends(token_present)):
@@ -98,6 +106,7 @@ async def get_skills(token_checked: bool = Depends(token_present)):
 	conn.close()
 	return skills.to_dict(orient="records")
 
+
 @api.get("/sources")
 async def get_sources(token_checked: bool = Depends(token_present)):
 	conn = get_db_connection()
@@ -105,12 +114,14 @@ async def get_sources(token_checked: bool = Depends(token_present)):
 	conn.close()
 	return sources.to_dict(orient="records")
 
+
 @api.get("/joboffer_skills")
 async def get_joboffer_skills(token_checked: bool = Depends(token_present)):
 	conn = get_db_connection()
 	joboffer_skills = pd.read_sql("SELECT * FROM joboffer_skills", conn)
 	conn.close()
 	return joboffer_skills.to_dict(orient="records")
+
 
 @api.get("/joboffer_skills/most-demanded-skills")
 async def get_most_demanded_skills(token_checked: bool = Depends(token_present)):
@@ -133,12 +144,14 @@ async def get_most_demanded_skills(token_checked: bool = Depends(token_present))
 
 	return joboffer_skills
 
+
 @api.get("/joboffers")
 async def get_joboffers(token_checked: bool = Depends(token_present)):
 	conn = get_db_connection()
 	joboffers = pd.read_sql("SELECT * FROM joboffers", conn)
 	conn.close()
 	return joboffers.to_dict(orient="records")
+
 
 @api.get("/joboffers_contracts")
 async def get_joboffers_contracts(token_checked: bool = Depends(token_present)):
@@ -147,11 +160,20 @@ async def get_joboffers_contracts(token_checked: bool = Depends(token_present)):
 	conn.close()
 	return joboffers_contracts.to_dict(orient="records")
 
+
 @api.get("/coordinates")
-async def get_location_coordinates(token_checked: bool = Depends(token_present)):
+async def get_location_coordinates():
+	conn = get_db_connection()
+	locations = pd.read_sql("SELECT location, latitude, longitude FROM locations", conn)
+	locations = locations.dropna()
+	conn.close()
+	return locations.to_dict(orient="records")
+
+
+@api.get("/coordinates_full")
+async def get_full_location_coordinates():
 	conn = get_db_connection()
 	locations = pd.read_sql("SELECT * FROM locations", conn)
 	locations = locations.dropna()
 	conn.close()
 	return locations.to_dict(orient="records")
-	

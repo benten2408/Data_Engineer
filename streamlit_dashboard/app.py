@@ -27,6 +27,7 @@ def show_login_page():
             st.success("Logged in successfully.")
             st.rerun()
         else:
+            st.session_state['access_token'] = None
             st.error("Failed to login. Check your username and password.")
 
 

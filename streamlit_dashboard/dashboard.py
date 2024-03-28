@@ -17,7 +17,11 @@ import plotly.express as px
 API_BASE_URL = os.environ['API_BASE_URL']
 st.set_page_config(layout="wide")
 
+if not st.session_state['access_token']:
+    st.session_state['access_token'] = None
 headers = {"Authorization": f"Bearer {st.session_state['access_token']}"}
+#headers = {"Authorization": f"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiZXhwIjoxNzExNjU1ODczfQ.GxKShZNQblqC6hkuYUywdUsr7vIlYo2UGiTQj8KGzqM"}
+st.write(st.session_state)
 
 # a ejecter dans un autre fichier
 def clean_location_column(df):
@@ -179,6 +183,7 @@ def run():
         
         # getting latitude, longitude, city every unique location
         location_coordinates = fetch_full_location_coordinates("coordinates_full")
+        #st.dataframe(location_coordinates)
 
         # affiche un planisfère de toute la largeur avec points rouges non proportionnels
         #st.map(location_coordinates)
@@ -195,9 +200,8 @@ def run():
         all_offers_located = not_all_offers.merge(location_coordinates[['location', 'latitude', 'longitude', 'city', 'postal_code']], on='location', how='left')
 
         # on intégre une colonne comme simple décompte qui serra additionner pour obtenir le nombre d'offre par localisation
-        all_offers_located.insert(18,"job_offer_count", [1 for _ in range(all_offers_located.shape[0])])
-        #all_offers_located
-    
+        all_offers_located.insert(18, "job_offer_count", [1 for _ in range(all_offers_located.shape[0])])
+        
         # remplacer les offres localisées en France par Paris
         all_offers_located.loc[all_offers_located['location'] == 'France', 'latitude'] = 48.859
         all_offers_located.loc[all_offers_located['location'] == 'France', 'longitude'] = 2.347
@@ -209,7 +213,6 @@ def run():
         all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'longitude'] = 7.746870067373243
         all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'postal_code'] = 67302
         all_offers_located.loc[all_offers_located['location'] == 'Schiltigheim, Strasbourg-Campagne', 'city'] = 'Schiltigheim'
-    
         len1 = len(all_offers_located)
         all_offers_located = all_offers_located.dropna(subset=['latitude', 'longitude'])
         len2 = len(all_offers_located)
@@ -219,6 +222,7 @@ def run():
         job_offer_count_sum = all_offers_located.groupby(by="city")["job_offer_count"].sum()
         job_offer_count_sum_dict = job_offer_count_sum.to_dict()
 
+        #st.dataframe(all_offers_located)
         # map function to create a new column based on the 'city' column
         all_offers_located['sum_of_job_offers'] = all_offers_located['city'].map(job_offer_count_sum_dict)
 
@@ -240,9 +244,9 @@ def run():
         #                            color="job_offer_count", size="job_offer_count",
         #                            color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
         #   
+        st.dataframe(all_offers_located)
         px.set_mapbox_access_token(open(".mapbox_token").read())
         #"all_offers_located"
-        #all_offers_located
 
         hover_data = {"sum_of_job_offers":False,
                     "Nombre d'annonce " : all_offers_located['sum_of_job_offers'], #à améliorer
