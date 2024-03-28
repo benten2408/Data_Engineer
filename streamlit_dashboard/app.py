@@ -69,7 +69,7 @@ Notre objectif est de répondre à ces 5 questions :
 - combien d'entreprises par secteur ont publié des annonces ?
 - quelles sont les compétences les plus demandées ?
 - quel est le contrat majoritairement proposé dans les annonces ? 
-- quelle est la zone géographique avec le plus d'offres ?_"""
+- quelle est la zone géographique avec le plus d'offres ?"""
 st.write(introduction)
 tab0, tab1, tab2, tab3, tab4 = st.tabs(["Les secteurs qui recrutent le plus",
                                         "Les entreprises par secteurs",
@@ -133,7 +133,7 @@ with tab3:
         text="number_offer",
         color='number_offer', color_continuous_scale=px.colors.sequential.Viridis
     )
-
+    fig.update_layout(autosize=True)
     st.plotly_chart(fig)
 
 with tab4:
@@ -236,8 +236,8 @@ with tab4:
     #                            color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
     #   
     px.set_mapbox_access_token(open(".mapbox_token").read())
-    "all_offers_located"
-    all_offers_located
+    #"all_offers_located"
+    #all_offers_located
 
     hover_data = {"sum_of_job_offers":False,
                 "Nombre d'annonce " : all_offers_located['sum_of_job_offers'], #à améliorer
@@ -263,13 +263,22 @@ with tab4:
     #     hovertemplate="<b>%{text}</b><br><br>" + "longitude: %{lon:.2f}<br>" + "latitude: %{lat:.2f}<br>" + "altitude: %{customdata[0]:.0f}<br>"+ "ppm: %{marker.color:.2f}<extra></extra>",
     # )]
 
-    fig.update_layout(autosize=True)
+    #fig.update_layout(autosize=True)
 
     #fig.update_layout(mapbox_style='open-street-map')
     #fig.update_layout(mapbox_style='outdoors')
-    fig.update_layout(mapbox_style='light')
     #fig.update_layout(mapbox_style='streets')
-    st.plotly_chart(fig, use_container_width=True)
+    fig.update_layout(mapbox_style='light')
+    
+    #st.plotly_chart(fig, use_container_width=True)
+    #st.plotly_chart(fig, height=1800,use_container_width=True)
+    
+    #width = st.sidebar.slider("plot width", 100, 1000, 10)
+    #height = st.sidebar.slider("plot height", 100, 1000, 10)
+    #fig.update_layout(width=width, height=height)
+
+    fig.update_layout(width=1000, height=800)
+    st.plotly_chart(fig)
 
     # ajout lien annonce
     # ajout lien url cliquable
