@@ -2,6 +2,8 @@ import os
 import streamlit as st
 import requests
 
+from dashboard import run
+
 API_BASE_URL = os.environ['API_BASE_URL']
 
 def authenticate_user(username: str, password: str):
@@ -27,12 +29,8 @@ def show_login_page():
         else:
             st.error("Failed to login. Check your username and password.")
 
-def main_app():
-    """Main application after successful login."""
-    st.title("Welcome to the Dashboard")
-    # Your main app logic goes here
 
 if 'access_token' not in st.session_state or st.session_state['access_token'] is None:
     show_login_page()
 else:
-    main_app()
+    run()

@@ -1,217 +1,217 @@
-location,latitude,longitude
-"Toulouse, Haute-Garonne",43.61956,1.405441
-"Limoges, Haute-Vienne",45.828281,1.259509
-"Niort, Deux-Sèvres",46.359227,-0.466111
-"Paris, Ile-de-France",48.830919,2.376158
-"Lyon, Rhône",45.733918,4.828239
-"Clermont-Ferrand, Puy-de-Dôme",45.787475,3.060006
-"Nantes, Loire-Atlantique",47.211288,-1.526251
-"Tours, Indre-et-Loire",47.404818,0.699401
-"Grasse, Alpes-Maritimes",43.64527,6.937547
-"Marseille, Bouches-du-Rhône",43.279413,5.381936
-"Vélizy-Villacoublay, Versailles",48.785929,2.190344
-"Montpellier, Hérault",43.610476,3.87048
-"Aix-en-Provence, Bouches-du-Rhône",43.514786,5.452306
-"Villeneuve-d'Ascq, Lille",50.625559,3.145605
-France,44.518707,0.221494
-"Strasbourg, Strasbourg-Ville",49.470674,5.93265
-"Hauts-de-Seine, Ile-de-France",48.784678,2.243062
-"Ile-de-France, France",48.888988,2.544404
-"Bordeaux, Gironde",44.864586,-0.551486
-"Cachan, L'Haÿ-les-Roses",48.776851,2.341617
-"Boulogne-Billancourt, Hauts-de-Seine",48.828347,2.25052
-"Metz, Metz-Ville",49.467712,5.930684
-"Puteaux, Nanterre",48.884156,2.237199
-"Antibes-Biot, Grasse",43.594589,7.093774
-"Levallois-Perret, Nanterre",48.894215,2.286846
-"Hauts-De-France, France",14.609545,-61.067084
-"Noisy-le-Grand, Le Raincy",48.890918,2.517196
-"Nanterre, Hauts-de-Seine",48.883376,2.215589
-"Lille, Nord",50.646977,3.054869
-"Dijon, Côte-d'Or",47.333332,5.03675
-"Molsheim, Bas-Rhin",48.540123,7.50352
-"Rezé, Nantes",47.20422,-1.60787
-"Issy-les-Moulineaux, Boulogne-Billancourt",48.829115,2.251879
-"Haute-Garonne, Occitanie",43.690104,1.06982
-"Roubaix-Ouest, Lille",50.63834,3.068671
-"11ème Arrondissement, Paris",48.860066,2.381835
-"Saint-Cloud, Boulogne-Billancourt",48.844959,2.231832
-"Colombes, Nanterre",48.889293,2.221145
-"Villeurbanne, Lyon",45.768975,4.890035
-"Armentières, Lille",50.63587,3.044959
-"Savoie, Auvergne-Rhône-Alpes",46.104942,5.824183
-"Loiret, Centre",47.867436,1.829392
-"Saint-Mandé, Nogent-sur-Marne",48.034799,5.346774
-"Talence, Bordeaux",44.824993,-0.585918
-"Rhône, Auvergne-Rhône-Alpes",43.454781,5.238909
-"Le Bar-sur-Loup, Grasse",43.692396,6.979709
-"Indre-et-Loire, Centre",47.432335,0.66972
-"Puy-de-Dôme, Auvergne-Rhône-Alpes",45.730985,3.198984
-"Deux-Sèvres, Nouvelle-Aquitaine",46.971913,-0.20731
-"Loire-Atlantique, Pays de la Loire",47.257587,-1.52961
-"Haute-Vienne, Nouvelle-Aquitaine",46.066164,0.92192
-"Bouches-du-Rhône, Provence-Alpes-Côte d'Azur",43.64245,5.090887
-"Oise, Hauts-De-France",49.280684,2.526862
-"Suresnes, Nanterre",48.883376,2.215589
-"Antibes, Grasse",43.594589,7.093774
-"Rennes, Ille-et-Vilaine",48.111251,-1.686853
-"Hérault, Occitanie",43.633344,3.432873
-"Nord, Hauts-De-France",50.274812,3.972408
-"Maurepas, Rambouillet",44.028625,1.371173
-"Ivry-sur-Seine, Créteil",48.812752,2.386427
-"Aix en Provence Sud-Ouest, Aix-en-Provence",43.643258,5.545618
-"Jarnages, Guéret",47.946477,-2.595434
-"Courbevoie, Nanterre",48.893044,2.205206
-"Vannes, Morbihan",47.659971,-2.752192
-"1er Arrondissement, Paris",48.862351,2.335987
-"Moselle, Grand-Est",49.298345,6.114763
-"Marcq-en-Baroeul, Lille",50.676748,3.100594
-"Massy, Palaiseau",48.727822,2.245286
-"Olivet, Orléans",47.883193,1.904003
-"Nice, Alpes-Maritimes",43.674468,7.196837
-"Saint-Herblain, Nantes",47.210481,-1.602168
-"La Roche-sur-Yon-Sud, La Roche-sur-Yon",46.160631,4.351391
-"La Roche-sur-Yon-Nord, La Roche-sur-Yon",46.677544,-1.412765
-"Le Poiré-sur-Vie, La Roche-sur-Yon",46.767089,-1.521515
-"Rennes-Sud-Ouest, Rennes",47.863382,-2.422803
-"Betton, Rennes",48.176427,-1.639291
-"Cesson-Sévigné, Rennes",48.114057,-1.622987
-"Pyrénées-Atlantiques, Nouvelle-Aquitaine",43.501944,-1.512113
-"9ème Arrondissement, Paris",48.877098,2.337887
-"Gironde, Nouvelle-Aquitaine",44.633362,-1.130862
-"Brest, Finistère",48.390416,-4.501649
-"Meudon, Boulogne-Billancourt",48.827616,2.242153
-"Les Deux-Sevi, Ajaccio",41.950053,8.778357
-"Haute-Savoie, Auvergne-Rhône-Alpes",46.214334,6.282101
-"Isère, Auvergne-Rhône-Alpes",45.155353,5.716168
-"Grenoble, Isère",45.192533,5.716094
-"Saint-Cyr-l'Ecole, Versailles",48.80279,2.063622
-"Bois-Colombes, Nanterre",48.889293,2.221145
-"Neuilly-sur-Seine, Nanterre",48.886892,2.209826
-"Morlaix, Finistère",48.403969,-4.520811
-"Caen, Calvados",49.18926,-0.336982
-"Liancourt, Clermont",49.32103,2.419311
-"Allauch, Marseille",43.305395,5.501071
-"Bagneux, Antony",48.7978,2.310213
-"10ème Arrondissement, Paris",48.875963,2.362358
-"Fontaine, Grenoble",45.187876,5.725222
-"Lille-Nord, Lille",50.646977,3.054869
-"Maisons-Alfort, Créteil",48.801685,2.440318
-"Pau, Pyrénées-Atlantiques",43.293498,-0.369073
-"Méry-sur-Seine, Nogent-sur-Seine",48.494129,3.508965
-"Rueil-Malmaison, Nanterre",48.874602,2.180528
-"Annemasse, Saint-Julien-en-Genevois",46.14235,6.093411
-"Chambéry, Savoie",45.577907,5.898519
-"Schiltigheim, Strasbourg-Campagne",,
-"Roubaix, Lille",50.641707,3.084759
-"Orléans, Loiret",47.873361,1.910372
-"Décines-Charpieu, Lyon",45.768363,4.958356
-"Mérignac, Bordeaux",44.838703,-0.623818
-"Fontaine, Belfort",47.623301,6.852229
-"Pessac, Bordeaux",44.828336,-0.583997
-"Montreuil, Pas-de-Calais",50.472574,1.738356
-"Champs-sur-Tarentaine-Marchal, Mauriac",45.425927,2.597239
-"Meyzieu, Lyon",45.76105,5.007302
-"Nice 13e Canton, Nice",43.643753,-1.440308
-"Wasselonne, Molsheim",48.58375,7.689477
-"Toulouse 9e Canton, Toulouse",48.885457,2.395382
-"Montpellier 8e Canton, Montpellier",43.617966,3.881
-"Alpes-Maritimes, Provence-Alpes-Côte d'Azur",43.929006,7.097551
-"Caluire-et-Cuire, Lyon",45.797623,4.848745
-"Saint-Ouen, Saint-Denis",48.926884,2.338512
-"Pau-Est, Pau",43.312154,-0.372225
-"Saint-Philbert-de-Grand-Lieu, Nantes",47.046178,-1.638205
-"Taulé, Morlaix",48.604062,-3.882803
-"Aix-les-Bains, Chambéry",45.58256,5.924338
-"Côte-d'Or, Bourgogne-Franche-Comté",47.003464,5.190378
-"Yvelines, Ile-de-France",48.850154,1.897555
-"Essonne, Ile-de-France",48.702967,2.484043
-"Le Plessis-Robinson, Antony",48.78138,2.260472
-"Beauvais, Oise",49.439897,2.087073
-"Tourcoing, Lille",50.722667,3.152018
-"Maine-et-Loire, Pays de la Loire",47.34966,-0.226356
-"Charenton-le-Pont, Créteil",48.823948,2.407129
-"Sceaux, Antony",48.758719,2.301735
-"Angers-Est, Angers",48.950528,4.333801
-"Troyes 1er Canton, Troyes",44.197887,1.679056
-"Gard, Occitanie",43.79018,4.079152
-"Cergy-Sud, Pontoise",49.04215,2.061455
-"19ème Arrondissement, Paris",48.887243,2.387937
-"Norrent-Fontes, Béthune",50.591206,2.41473
-"Ille-et-Vilaine, Bretagne",48.65794,-1.974656
-"Saint-Denis, Seine-Saint-Denis",48.939747,2.341932
-"Castelnaudary-Nord, Carcassonne",43.30094,1.986619
-"Clichy, Nanterre",48.90348,2.304932
-"Asnières-sur-Seine, Nanterre",48.909851,2.282956
-"Meylan, Grenoble",45.214974,5.780538
-"Montigny-lès-Metz, Metz-Campagne",49.095328,6.153746
-"Seine-Maritime, Normandie",49.507913,0.173311
-"Nancy, Meurthe-et-Moselle",48.70499,6.182593
-"Morbihan, Bretagne",48.135675,-1.667755
-"Seine-Saint-Denis, Ile-de-France",48.921347,2.361122
-"8ème Arrondissement, Paris",48.873635,2.3116
-"Montrouge, Antony",48.817877,2.330289
-"Chamalières, Clermont-Ferrand",45.790945,3.069837
-"Dinan-Est, Dinan",48.664038,6.171856
-"Finistère, Bretagne",48.133103,-1.67624
-"Châtillon, Antony",48.801289,2.288805
-"Meurthe-et-Moselle, Grand-Est",48.607137,6.147629
-"Corbeil-Essonnes, Evry",48.621611,2.406995
-Paris,48.859,2.347
-Marcq En Baroeul,50.676748,3.100594
-Boulogne-Billancourt,48.836976,2.242716
-Nantes,47.239367,-1.555335
-Chassieu,45.73584,4.958712
-Levallois-Perret,48.894215,2.286846
-Toulouse,43.604082,1.433805
-Lyon,45.758,4.835
-Courbevoie,48.897974,2.257057
-Valbonne,42.494271,3.04792
-Vélizy-Villacoublay,48.785929,2.190344
-Nanterre,48.898095,2.202314
-Créteil,48.784506,2.452976
-Wasquehal,50.673573,3.129788
-Croix,50.676606,3.155948
-Bordeaux,44.851895,-0.587877
-Tours,47.395476,0.694273
-Grenoble,45.182081,5.7243
-Bruges,44.881406,-0.60324
-Montpellier,43.610476,3.87048
-Villeurbanne,45.768975,4.890035
-Marcq-en-Baroeul,50.676748,3.100594
-Lille,50.630992,3.045433
-Le Plessis-Robinson,48.78138,2.260472
-Puteaux,48.884156,2.237199
-Metz,49.108385,6.194897
-Rouen,49.440044,1.093912
-Villeneuve-d'Ascq,50.637916,3.147134
-Saint-Herblain,47.227082,-1.625284
-Fontenay-sous-Bois,48.850004,2.473494
-Pérols,43.567179,3.952282
-La Défense,48.890171,2.242921
-Fontaine,48.782684,1.237029
-Aix-en-Provence,43.541369,5.406124
-Neuilly-sur-Seine,48.886191,2.265869
-Suresnes,48.870985,2.218087
-Massy,16.313837,-61.705044
-Clichy,48.90348,2.304932
-Saint-Denis,-20.909778,55.444588
-Lannion,47.787597,-2.612829
-Évry-Courcouronnes,48.627362,2.433066
-Sophia-Antipolis,49.214235,-0.3492
-Saint-Maurice,48.165129,1.389775
-Limoges,45.856159,1.221254
-Niort,46.327372,-0.466291
-Issy-les-Moulineaux,48.823903,2.262888
-Limonest,45.825318,4.773352
-La Garenne-Colombes,48.907164,2.244406
-Caen,49.184316,-0.37193
-Strasbourg,48.579831,7.761454
-Charenton-le-Pont,48.823948,2.407129
-Oloron-Sainte-Marie,43.178857,-0.610248
-Maisons-Alfort,48.801685,2.440318
-Guyancourt,48.772925,2.069679
-Ramonville-Saint-Agne,43.544386,1.474622
-Gennevilliers,48.93113,2.294231
-Émerainville,48.817648,2.611569
-Six-Fours-les-Plages,43.092517,5.817443
+location,latitude,longitude,city,postal_code
+"Toulouse, Haute-Garonne",43.61956,1.405441,Toulouse,31200
+"Limoges, Haute-Vienne",45.828281,1.259509,Limoges,87000
+"Niort, Deux-Sèvres",46.359227,-0.466111,Niort,79000
+"Paris, Ile-de-France",48.830919,2.376158,Paris,75013
+"Lyon, Rhône",45.733918,4.828239,Lyon,69007
+"Clermont-Ferrand, Puy-de-Dôme",45.787475,3.060006,Clermont-Ferrand,63100
+"Nantes, Loire-Atlantique",47.211288,-1.526251,Nantes,44200
+"Tours, Indre-et-Loire",47.404818,0.699401,Tours,37100
+"Grasse, Alpes-Maritimes",43.64527,6.937547,Grasse,06130
+"Marseille, Bouches-du-Rhône",43.279413,5.381936,Marseille,13008
+"Vélizy-Villacoublay, Versailles",48.785929,2.190344,Vélizy-Villacoublay,78140
+"Montpellier, Hérault",43.610476,3.87048,Montpellier,34000
+"Aix-en-Provence, Bouches-du-Rhône",43.514786,5.452306,Aix-en-Provence,13100
+"Villeneuve-d'Ascq, Lille",50.625559,3.145605,Villeneuve-d'Ascq,59650
+France,44.518707,0.221494,Virazeil,47200
+"Strasbourg, Strasbourg-Ville",49.470674,5.93265,Villerupt,54190
+"Hauts-de-Seine, Ile-de-France",48.784678,2.243062,Clamart,92140
+"Ile-de-France, France",48.888988,2.544404,Gagny,93220
+"Bordeaux, Gironde",44.864586,-0.551486,Bordeaux,33300
+"Cachan, L'Haÿ-les-Roses",48.776851,2.341617,L'Haÿ-les-Roses,94240
+"Boulogne-Billancourt, Hauts-de-Seine",48.828347,2.25052,Boulogne-Billancourt,92100
+"Metz, Metz-Ville",49.467712,5.930684,Villerupt,54190
+"Puteaux, Nanterre",48.884156,2.237199,Puteaux,92800
+"Antibes-Biot, Grasse",43.594589,7.093774,Antibes,06600
+"Levallois-Perret, Nanterre",48.894215,2.286846,Levallois-Perret,92300
+"Hauts-De-France, France",14.609545,-61.067084,Fort-de-France,97200
+"Noisy-le-Grand, Le Raincy",48.890918,2.517196,Le Raincy,93340
+"Nanterre, Hauts-de-Seine",48.883376,2.215589,Nanterre,92000
+"Lille, Nord",50.646977,3.054869,Lille,59800
+"Dijon, Côte-d'Or",47.333332,5.03675,Dijon,21000
+"Molsheim, Bas-Rhin",48.540123,7.50352,Molsheim,67120
+"Rezé, Nantes",47.20422,-1.60787,Nantes,44100
+"Issy-les-Moulineaux, Boulogne-Billancourt",48.829115,2.251879,Boulogne-Billancourt,92100
+"Haute-Garonne, Occitanie",43.690104,1.06982,Vignaux,31480
+"Roubaix-Ouest, Lille",50.63834,3.068671,Lille,59800
+"11ème Arrondissement, Paris",48.860066,2.381835,Paris 11e Arrondissement,75011
+"Saint-Cloud, Boulogne-Billancourt",48.844959,2.231832,Boulogne-Billancourt,92100
+"Colombes, Nanterre",48.889293,2.221145,Nanterre,92000
+"Villeurbanne, Lyon",45.768975,4.890035,Villeurbanne,69100
+"Armentières, Lille",50.63587,3.044959,Lille,59800
+"Savoie, Auvergne-Rhône-Alpes",46.104942,5.824183,Valserhône,01200
+"Loiret, Centre",47.867436,1.829392,Saint-Hilaire-Saint-Mesmin,45160
+"Saint-Mandé, Nogent-sur-Marne",48.034799,5.346774,Nogent,52800
+"Talence, Bordeaux",44.824993,-0.585918,Bordeaux,33000
+"Rhône, Auvergne-Rhône-Alpes",43.454781,5.238909,Vitrolles,13127
+"Le Bar-sur-Loup, Grasse",43.692396,6.979709,Le Bar-sur-Loup,06620
+"Indre-et-Loire, Centre",47.432335,0.66972,Saint-Cyr-sur-Loire,37540
+"Puy-de-Dôme, Auvergne-Rhône-Alpes",45.730985,3.198984,Cournon-d'Auvergne,63800
+"Deux-Sèvres, Nouvelle-Aquitaine",46.971913,-0.20731,Saint-Jean-de-Thouars,79100
+"Loire-Atlantique, Pays de la Loire",47.257587,-1.52961,Nantes,44300
+"Haute-Vienne, Nouvelle-Aquitaine",46.066164,0.92192,Nouic,87330
+"Bouches-du-Rhône, Provence-Alpes-Côte d'Azur",43.64245,5.090887,Salon-de-Provence,13300
+"Oise, Hauts-De-France",49.280684,2.526862,Verneuil-en-Halatte,60550
+"Suresnes, Nanterre",48.883376,2.215589,Nanterre,92000
+"Antibes, Grasse",43.594589,7.093774,Antibes,06600
+"Rennes, Ille-et-Vilaine",48.111251,-1.686853,Rennes,35000
+"Hérault, Occitanie",43.633344,3.432873,Clermont-l'Hérault,34800
+"Nord, Hauts-De-France",50.274812,3.972408,Maubeuge,59600
+"Maurepas, Rambouillet",44.028625,1.371173,Montauban,82000
+"Ivry-sur-Seine, Créteil",48.812752,2.386427,Ivry-sur-Seine,94200
+"Aix en Provence Sud-Ouest, Aix-en-Provence",43.643258,5.545618,Peyrolles-en-Provence,13860
+"Jarnages, Guéret",47.946477,-2.595434,Guégon,56120
+"Courbevoie, Nanterre",48.893044,2.205206,Nanterre,92000
+"Vannes, Morbihan",47.659971,-2.752192,Vannes,56000
+"1er Arrondissement, Paris",48.862351,2.335987,Paris 1er Arrondissement,75001
+"Moselle, Grand-Est",49.298345,6.114763,Fameck,57290
+"Marcq-en-Baroeul, Lille",50.676748,3.100594,Marcq-en-Barœul,59700
+"Massy, Palaiseau",48.727822,2.245286,Massy,91300
+"Olivet, Orléans",47.883193,1.904003,Orléans,45100
+"Nice, Alpes-Maritimes",43.674468,7.196837,Nice,06000
+"Saint-Herblain, Nantes",47.210481,-1.602168,Nantes,44100
+"La Roche-sur-Yon-Sud, La Roche-sur-Yon",46.160631,4.351391,Belmont-de-la-Loire,42670
+"La Roche-sur-Yon-Nord, La Roche-sur-Yon",46.677544,-1.412765,La Roche-sur-Yon,85000
+"Le Poiré-sur-Vie, La Roche-sur-Yon",46.767089,-1.521515,Le Poiré-sur-Vie,85170
+"Rennes-Sud-Ouest, Rennes",47.863382,-2.422803,Val d'Oust,56460
+"Betton, Rennes",48.176427,-1.639291,Betton,35830
+"Cesson-Sévigné, Rennes",48.114057,-1.622987,Cesson-Sévigné,35510
+"Pyrénées-Atlantiques, Nouvelle-Aquitaine",43.501944,-1.512113,Anglet,64600
+"9ème Arrondissement, Paris",48.877098,2.337887,Paris 9e Arrondissement,75009
+"Gironde, Nouvelle-Aquitaine",44.633362,-1.130862,La Teste-de-Buch,33260
+"Brest, Finistère",48.390416,-4.501649,Brest,29000
+"Meudon, Boulogne-Billancourt",48.827616,2.242153,Boulogne-Billancourt,92100
+"Les Deux-Sevi, Ajaccio",41.950053,8.778357,Ajaccio,20090
+"Haute-Savoie, Auvergne-Rhône-Alpes",46.214334,6.282101,Juvigny,74100
+"Isère, Auvergne-Rhône-Alpes",45.155353,5.716168,Échirolles,38130
+"Grenoble, Isère",45.192533,5.716094,Grenoble,38000
+"Saint-Cyr-l'Ecole, Versailles",48.80279,2.063622,Saint-Cyr-l'École,78210
+"Bois-Colombes, Nanterre",48.889293,2.221145,Nanterre,92000
+"Neuilly-sur-Seine, Nanterre",48.886892,2.209826,Nanterre,92000
+"Morlaix, Finistère",48.403969,-4.520811,Brest,29200
+"Caen, Calvados",49.18926,-0.336982,Caen,14000
+"Liancourt, Clermont",49.32103,2.419311,Cambronne-lès-Clermont,60290
+"Allauch, Marseille",43.305395,5.501071,Marseille,13011
+"Bagneux, Antony",48.7978,2.310213,Bagneux,92220
+"10ème Arrondissement, Paris",48.875963,2.362358,Paris 10e Arrondissement,75010
+"Fontaine, Grenoble",45.187876,5.725222,Grenoble,38000
+"Lille-Nord, Lille",50.646977,3.054869,Lille,59800
+"Maisons-Alfort, Créteil",48.801685,2.440318,Maisons-Alfort,94700
+"Pau, Pyrénées-Atlantiques",43.293498,-0.369073,Pau,64000
+"Méry-sur-Seine, Nogent-sur-Seine",48.494129,3.508965,Nogent-sur-Seine,10400
+"Rueil-Malmaison, Nanterre",48.874602,2.180528,Rueil-Malmaison,92500
+"Annemasse, Saint-Julien-en-Genevois",46.14235,6.093411,Saint-Julien-en-Genevois,74160
+"Chambéry, Savoie",45.577907,5.898519,Chambéry,73000
+"Schiltigheim, Strasbourg-Campagne",,,,
+"Roubaix, Lille",50.641707,3.084759,Lille,59800
+"Orléans, Loiret",47.873361,1.910372,Orléans,45000
+"Décines-Charpieu, Lyon",45.768363,4.958356,Décines-Charpieu,69150
+"Mérignac, Bordeaux",44.838703,-0.623818,Bordeaux,33200
+"Fontaine, Belfort",47.623301,6.852229,Belfort,90000
+"Pessac, Bordeaux",44.828336,-0.583997,Bordeaux,33000
+"Montreuil, Pas-de-Calais",50.472574,1.738356,La Calotterie,62170
+"Champs-sur-Tarentaine-Marchal, Mauriac",45.425927,2.597239,Champs-sur-Tarentaine-Marchal,15270
+"Meyzieu, Lyon",45.76105,5.007302,Meyzieu,69330
+"Nice 13e Canton, Nice",43.643753,-1.440308,Capbreton,40130
+"Wasselonne, Molsheim",48.58375,7.689477,Eckbolsheim,67201
+"Toulouse 9e Canton, Toulouse",48.885457,2.395382,Paris,75019
+"Montpellier 8e Canton, Montpellier",43.617966,3.881,Montpellier,34090
+"Alpes-Maritimes, Provence-Alpes-Côte d'Azur",43.929006,7.097551,Villars-sur-Var,06710
+"Caluire-et-Cuire, Lyon",45.797623,4.848745,Caluire-et-Cuire,69300
+"Saint-Ouen, Saint-Denis",48.926884,2.338512,Saint-Denis,93200
+"Pau-Est, Pau",43.312154,-0.372225,Pau,64000
+"Saint-Philbert-de-Grand-Lieu, Nantes",47.046178,-1.638205,Saint-Philbert-de-Grand-Lieu,44310
+"Taulé, Morlaix",48.604062,-3.882803,Taulé,29670
+"Aix-les-Bains, Chambéry",45.58256,5.924338,Chambéry,73000
+"Côte-d'Or, Bourgogne-Franche-Comté",47.003464,5.190378,Lanthes,21250
+"Yvelines, Ile-de-France",48.850154,1.897555,Beynes,78650
+"Essonne, Ile-de-France",48.702967,2.484043,Yerres,91330
+"Le Plessis-Robinson, Antony",48.78138,2.260472,Le Plessis-Robinson,92350
+"Beauvais, Oise",49.439897,2.087073,Beauvais,60000
+"Tourcoing, Lille",50.722667,3.152018,Tourcoing,59200
+"Maine-et-Loire, Pays de la Loire",47.34966,-0.226356,Gennes-Val-de-Loire,49350
+"Charenton-le-Pont, Créteil",48.823948,2.407129,Charenton-le-Pont,94220
+"Sceaux, Antony",48.758719,2.301735,Antony,92160
+"Angers-Est, Angers",48.950528,4.333801,Fagnières,51510
+"Troyes 1er Canton, Troyes",44.197887,1.679056,Lavaurette,82240
+"Gard, Occitanie",43.79018,4.079152,Sommières,30250
+"Cergy-Sud, Pontoise",49.04215,2.061455,Cergy,95000
+"19ème Arrondissement, Paris",48.887243,2.387937,Paris 19e Arrondissement,75019
+"Norrent-Fontes, Béthune",50.591206,2.41473,Norrent-Fontes,62120
+"Ille-et-Vilaine, Bretagne",48.65794,-1.974656,Saint-Malo,35400
+"Saint-Denis, Seine-Saint-Denis",48.939747,2.341932,Saint-Denis,93200
+"Castelnaudary-Nord, Carcassonne",43.30094,1.986619,Castelnaudary,11400
+"Clichy, Nanterre",48.90348,2.304932,Clichy,92110
+"Asnières-sur-Seine, Nanterre",48.909851,2.282956,Asnières-sur-Seine,92600
+"Meylan, Grenoble",45.214974,5.780538,Meylan,38240
+"Montigny-lès-Metz, Metz-Campagne",49.095328,6.153746,Montigny-lès-Metz,57950
+"Seine-Maritime, Normandie",49.507913,0.173311,Le Havre,76610
+"Nancy, Meurthe-et-Moselle",48.70499,6.182593,Nancy,54000
+"Morbihan, Bretagne",48.135675,-1.667755,Rennes,35700
+"Seine-Saint-Denis, Ile-de-France",48.921347,2.361122,Saint-Denis,93200
+"8ème Arrondissement, Paris",48.873635,2.3116,Paris 8e Arrondissement,75008
+"Montrouge, Antony",48.817877,2.330289,Montrouge,92120
+"Chamalières, Clermont-Ferrand",45.790945,3.069837,Clermont-Ferrand,63100
+"Dinan-Est, Dinan",48.664038,6.171856,Vandœuvre-lès-Nancy,54500
+"Finistère, Bretagne",48.133103,-1.67624,Rennes,35700
+"Châtillon, Antony",48.801289,2.288805,Châtillon,92320
+"Meurthe-et-Moselle, Grand-Est",48.607137,6.147629,Messein,54850
+"Corbeil-Essonnes, Evry",48.621611,2.406995,Évry-Courcouronnes,91080
+Paris,48.859,2.347,Paris,75001
+Marcq En Baroeul,50.676748,3.100594,Marcq-en-Barœul,59700
+Boulogne-Billancourt,48.836976,2.242716,Boulogne-Billancourt,92100
+Nantes,47.239367,-1.555335,Nantes,44100
+Chassieu,45.73584,4.958712,Chassieu,69680
+Levallois-Perret,48.894215,2.286846,Levallois-Perret,92300
+Toulouse,43.604082,1.433805,Toulouse,31100
+Lyon,45.758,4.835,Lyon,69001
+Courbevoie,48.897974,2.257057,Courbevoie,92400
+Valbonne,42.494271,3.04792,Argelès-sur-Mer,66700
+Vélizy-Villacoublay,48.785929,2.190344,Vélizy-Villacoublay,78140
+Nanterre,48.898095,2.202314,Nanterre,92000
+Créteil,48.784506,2.452976,Créteil,94000
+Wasquehal,50.673573,3.129788,Wasquehal,59290
+Croix,50.676606,3.155948,Croix,59170
+Bordeaux,44.851895,-0.587877,Bordeaux,33800
+Tours,47.395476,0.694273,Tours,37100
+Grenoble,45.182081,5.7243,Grenoble,38100
+Bruges,44.881406,-0.60324,Bruges,33520
+Montpellier,43.610476,3.87048,Montpellier,34000
+Villeurbanne,45.768975,4.890035,Villeurbanne,69100
+Marcq-en-Baroeul,50.676748,3.100594,Marcq-en-Barœul,59700
+Lille,50.630992,3.045433,Lille,59160
+Le Plessis-Robinson,48.78138,2.260472,Le Plessis-Robinson,92350
+Puteaux,48.884156,2.237199,Puteaux,92800
+Metz,49.108385,6.194897,Metz,57050
+Rouen,49.440044,1.093912,Rouen,76000
+Villeneuve-d'Ascq,50.637916,3.147134,Villeneuve-d'Ascq,59493
+Saint-Herblain,47.227082,-1.625284,Saint-Herblain,44800
+Fontenay-sous-Bois,48.850004,2.473494,Fontenay-sous-Bois,94120
+Pérols,43.567179,3.952282,Pérols,34470
+La Défense,48.890171,2.242921,Puteaux,92800
+Fontaine,48.782684,1.237029,La Madeleine-de-Nonancourt,27320
+Aix-en-Provence,43.541369,5.406124,Aix-en-Provence,13080
+Neuilly-sur-Seine,48.886191,2.265869,Neuilly-sur-Seine,92200
+Suresnes,48.870985,2.218087,Suresnes,92150
+Massy,16.313837,-61.705044,Sainte-Rose,97115
+Clichy,48.90348,2.304932,Clichy,92110
+Saint-Denis,-20.909778,55.444588,Saint-Denis,97400
+Lannion,47.787597,-2.612829,Trédion,56250
+Évry-Courcouronnes,48.627362,2.433066,Évry-Courcouronnes,91000
+Sophia-Antipolis,49.214235,-0.3492,Hérouville-Saint-Clair,14200
+Saint-Maurice,48.165129,1.389775,Bonneval,28800
+Limoges,45.856159,1.221254,Limoges,87100
+Niort,46.327372,-0.466291,Niort,79000
+Issy-les-Moulineaux,48.823903,2.262888,Issy-les-Moulineaux,92130
+Limonest,45.825318,4.773352,Limonest,69760
+La Garenne-Colombes,48.907164,2.244406,La Garenne-Colombes,92250
+Caen,49.184316,-0.37193,Caen,14000
+Strasbourg,48.579831,7.761454,Strasbourg,67100
+Charenton-le-Pont,48.823948,2.407129,Charenton-le-Pont,94220
+Oloron-Sainte-Marie,43.178857,-0.610248,Oloron-Sainte-Marie,64400
+Maisons-Alfort,48.801685,2.440318,Maisons-Alfort,94700
+Guyancourt,48.772925,2.069679,Guyancourt,78280
+Ramonville-Saint-Agne,43.544386,1.474622,Ramonville-Saint-Agne,31520
+Gennevilliers,48.93113,2.294231,Gennevilliers,92230
+Émerainville,48.817648,2.611569,Émerainville,77184
+Six-Fours-les-Plages,43.092517,5.817443,Six-Fours-les-Plages,83140

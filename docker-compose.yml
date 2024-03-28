@@ -10,6 +10,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    container_name: postgres
 
   pgadmin:
     image: dpage/pgadmin4
@@ -21,6 +22,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+    container_name: pgadmin
 
   streamlit-dashboard:
     build: ./streamlit_dashboard
@@ -32,6 +34,7 @@ services:
       - API_BASE_URL=${API_BASE_URL}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    container_name: streamlit_dashboard
 
   api_backend:
     build: ./api_backend
