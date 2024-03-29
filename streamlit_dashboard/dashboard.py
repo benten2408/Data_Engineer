@@ -67,16 +67,16 @@ def sort_contracttypes(contract_type):
 def run():
     titre = "Projet Jobmarket : les offres d'emplois pour Data Engineers en France"
     st.title(titre)
-    introduction = "Dans le cadre de la [formation de Data Engineer par DataScientest](https://datascientest.com/formation-data-engineer) au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.  \n \
-    Voici le résultat de nos recherches sur les **offres d\'emplois de Data Engineer publiées en France au cours des 30 derniers jours**.  \n \
-    Nous avons récolté les annonces publiées sur [Welcome to The Jungle](https://www.welcometothejungle.com/en) et via l'[API d'Adzuna](https://www.adzuna.fr), deux aggrégateurs.  \n \
-    Notre objectif est de répondre à ces 5 questions :   \n \
-          \t - quels secteurs recrutent le plus ?   \n \
-          \t - combien d\'entreprises par secteur ont publié des annonces ?   \n \
-          \t - quelles sont les compétences les plus demandées ?   \n \
-          \t - quel est le contrat majoritairement proposé dans les annonces ? \n \
-          \t - quelle est la zone géographique avec le plus d\'offres ?  \n "
-    st.write(introduction)
+    introduction = '''Dans le cadre de la [formation de Data Engineer par DataScientest](https://datascientest.com/formation-data-engineer) au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.  
+    Voici le résultat de nos recherches sur les **offres d\'emplois de Data Engineer publiées en France au cours des 30 derniers jours**.  
+    Nous avons récolté les annonces publiées sur [Welcome to The Jungle](https://www.welcometothejungle.com/en) et via l'[API d'Adzuna](https://www.adzuna.fr), deux aggrégateurs.  
+    Notre objectif est de répondre à ces 5 questions :   
+      - quels secteurs recrutent le plus ?   
+      - combien d\'entreprises par secteur ont publié des annonces ?   
+      - quelles sont les compétences les plus demandées ?  
+      - quel est le contrat majoritairement proposé dans les annonces ?  
+      - quelle est la zone géographique avec le plus d\'offres ?  '''
+    st.markdown(introduction)
     tab0, tab1, tab2, tab3, tab4 = st.tabs(["Les secteurs qui recrutent",
                                             "Les entreprises par secteurs",
                                             "Les compétences recherchées",
@@ -120,7 +120,7 @@ def run():
             return pd.DataFrame(response.json(), columns=['contracttype', 'number_offer'])
 
         all_contracts = fetch_data_contract("joboffers_contracts")
-        st.dataframe(all_contracts)
+        
         with col0:
             # Worth mentionning, the nunique() method does NOT include the None values
             st.write(f"  \n Initialement, les **{all_contracts.number_offer.sum()} annonces** * récupérées sont réparties en {all_contracts['contracttype'].nunique()} types de contrat possibles.\n")
@@ -131,24 +131,31 @@ def run():
             known_contracts = all_contracts.dropna(subset = ['contracttype'])
             result = known_contracts.groupby('contracttype')['number_offer'].sum().reset_index()
             result.sort_values('number_offer', inplace=True, ascending=False)
-            st.write(f"\
-            Pour une meilleure lisibilité, nous les avons rassemblées en **5 catégories** :  \n \
-            - CDI  \n\
-            - CDD  \n\
-            - Freelance  \n \
-            - Alternance  \n \
-            - Stage  \n\
-             \n *sans compter donc les {int(unspecified_contracts)} annonces où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données.  \n \
-             La figure représentent la répartition des {int(result['number_offer'].sum())} annonces restantes")
+            details = f'''Pour une meilleure lisibilité, nous les avons rassemblées en **5 catégories** :  
+            - CDI  
+            - CDD  
+            - Freelance  
+            - Alternance  
+            - Stage  
+             * _sans compter donc les {int(unspecified_contracts)} annonces_ où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données.  \n \
+             La figure représente donc la répartition des {int(result['number_offer'].sum())} annonces restantes'''
+            st.markdown(details)
 
         with col1:
             fig = px.bar(
-                result,  x="contracttype", y="number_offer", title='Les 5 contrats possibles',
-                labels={'contracttype': 'Contrats', 'number_offer': 'Nombre d\'annonces'},
+                result,  x="contracttype", y="number_offer", 
+                labels={'contracttype': 'Contrats ', 'number_offer': 'Nombre d\'annonces '},
                 text="number_offer",
                 color='number_offer', color_continuous_scale=px.colors.sequential.Viridis
             )
+            fig.update_yaxes(showgrid=True, gridwidth=1, title_text='')
+            fig.update_xaxes(showgrid=False, title_text='')
             fig.update_layout(autosize=True)
+            fig.update_layout(title={'text': "Les 5 contrats possibles",
+                'y':0.9,
+                'x':0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'})
             st.plotly_chart(fig)
 
     with tab4:
@@ -189,7 +196,6 @@ def run():
         
         # getting latitude, longitude, city every unique location
         location_coordinates = fetch_full_location_coordinates("coordinates_full")
-        st.dataframe(location_coordinates)
 
         # affiche un planisfère de toute la largeur avec points rouges non proportionnels
         #st.map(location_coordinates)
@@ -264,7 +270,7 @@ def run():
         #                            color="job_offer_count", size="job_offer_count",
         #                            color_continuous_scale=px.colors.sequential.Viridis, size_max=50, zoom=3)
         #   
-        st.dataframe(all_offers_located)
+        #st.dataframe(all_offers_located)
         px.set_mapbox_access_token(open(".mapbox_token").read())
         #"all_offers_located"
 
@@ -307,7 +313,7 @@ def run():
         #height = st.sidebar.slider("plot height", 100, 1000, 10)
         #fig.update_layout(width=width, height=height)
 
-        #fig.update_layout(width=1000, height=800)
+        fig.update_layout(width=1000, height=800)
         st.plotly_chart(fig)
 
     # ajout lien annonce
