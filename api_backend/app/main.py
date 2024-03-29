@@ -7,7 +7,7 @@ import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from typing import List, Optional
 
-from app.auth_utils import create_access_token, verify_password, users_db
+from app.auth_utils import create_access_token, verify_password
 
 DATABASE = os.environ['DATABASE']
 DOCKER_POSTGRES_HOST = os.environ['DOCKER_POSTGRES_HOST']
@@ -38,6 +38,18 @@ def get_db_connection():
     return conn
 
 
+def get_user_from_postgresql():
+	conn = get_db_connection()
+	result = pd.read_sql("SELECT * FROM users", conn)
+	users_db = dict()
+	for index, row in result.iterrows():
+		users_db[row['username']] = {
+			'username': row['username'],
+			'hashed_password': row['password']
+		}
+	conn.close()
+	return users_db
+
 
 def get_user(db, username: str):
     if username in db:
@@ -45,7 +57,8 @@ def get_user(db, username: str):
         return user_dict
 
 
-def authenticate_user(users_db, username: str, password: str):
+def authenticate_user(username: str, password: str):
+    users_db = get_user_from_postgresql()
     user = get_user(users_db, username)
     if not user:
         return False
@@ -56,9 +69,7 @@ def authenticate_user(users_db, username: str, password: str):
 
 @api.post("/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    print("dans api_backend/app/main.py login_for_access_token")
-    user = authenticate_user(users_db, form_data.username, form_data.password)
-    print(user)
+    user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

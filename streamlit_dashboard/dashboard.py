@@ -15,7 +15,6 @@ import plotly.express as px
 #import plotly.graph_objects as go
 
 API_BASE_URL = os.environ['API_BASE_URL']
-st.set_page_config(layout="wide")
 
 #st.write(st.session_state)
 #st.write(st.session_state=={})

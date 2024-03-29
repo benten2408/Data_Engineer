@@ -4,8 +4,9 @@ import pandas as pd
 import locale
 locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 import requests
+from passlib.context import CryptContext
 
-from env_config import DATA_TO_INGEST_FOLDER
+from env_config import DATA_TO_INGEST_FOLDER, TEST_USERNAME, TEST_PASSWORD
 
 
 def get_skills_list():
@@ -181,7 +182,9 @@ def location_process(cur):
 	ingest_location(cur)
 
 
-def create_user(cur, test_user, test_hashed_password):
+def create_user(cur):
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    hashed_password = pwd_context.hash(TEST_PASSWORD)
     cur.execute("INSERT INTO Users (username, password) VALUES (%s, %s);",
-                (test_user, test_hashed_password))
+                (TEST_USERNAME, hashed_password))
     

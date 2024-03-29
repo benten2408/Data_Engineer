@@ -1,6 +1,6 @@
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from env_config import DATABASE, POSTGRES_USER, POSTGRES_PASSWORD, HOST, PORT, TEST_USERNAME, TEST_HASHED_PASSWORD
+from env_config import DATABASE, POSTGRES_USER, POSTGRES_PASSWORD, HOST, PORT
 
 from postgresql.create_db_schema import create_database_query, create_schema_query
 from postgresql.ingest_data import ingest_joboffers_query, ingest_skills_query, location_process, create_user
@@ -57,7 +57,7 @@ class DatabaseManager:
 		ingest_skills_query(cur)
 		ingest_joboffers_query(cur)
 		location_process(cur)
-		create_user(cur, TEST_USERNAME, TEST_HASHED_PASSWORD)
+		create_user(cur)
 
 		print(f"Data ingested in {DATABASE} successfully.")
 

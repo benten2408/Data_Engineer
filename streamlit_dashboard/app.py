@@ -5,10 +5,10 @@ import requests
 from dashboard import run
 
 API_BASE_URL = os.environ['API_BASE_URL']
+st.set_page_config(layout="wide")
 
 def authenticate_user(username: str, password: str):
     """Authenticate user by making a request to the FastAPI backend."""
-    st.write("dans streamlit/app.py authenticate_user juste avant requests.post")
     response = requests.post(f"{API_BASE_URL}/token", data={"username": username, "password": password})
     if response.status_code == 200:
         return response.json()
@@ -17,19 +17,21 @@ def authenticate_user(username: str, password: str):
 
 def show_login_page():
     """Display the login form and handle user authentication."""
-    st.title("Login to Access Job Market Dashboard")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
+    col1, col2, col3 = st.columns([1,3,1])
 
-    if st.button("Login"):
+    col2.title("Login to Access Job Market Dashboard")
+    username = col2.text_input("Username")
+    password = col2.text_input("Password", type="password")
+
+    if col2.button("Login"):
         token_response = authenticate_user(username, password)
         if token_response:
             st.session_state['access_token'] = token_response['access_token']
-            st.success("Logged in successfully.")
+            col2.success("Logged in successfully.")
             st.rerun()
         else:
             st.session_state['access_token'] = None
-            st.error("Failed to login. Check your username and password.")
+            col2.error("Failed to login. Check your username and password.")
 
 
 if 'access_token' not in st.session_state or st.session_state['access_token'] is None:
