@@ -6,6 +6,7 @@ from typing import Optional
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from passlib.context import CryptContext
+from main import get_user_from_postgresql
 
 
 SECRET_KEY = os.environ['SECRET_KEY']
