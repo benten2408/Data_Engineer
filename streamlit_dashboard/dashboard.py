@@ -20,8 +20,6 @@ st.set_page_config(layout="wide")
 if not st.session_state['access_token']:
     st.session_state['access_token'] = None
 headers = {"Authorization": f"Bearer {st.session_state['access_token']}"}
-#headers = {"Authorization": f"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiZXhwIjoxNzExNjU1ODczfQ.GxKShZNQblqC6hkuYUywdUsr7vIlYo2UGiTQj8KGzqM"}
-st.write(st.session_state)
 
 # a ejecter dans un autre fichier
 def clean_location_column(df):
@@ -51,9 +49,11 @@ def sort_contracttypes(contract_type):
     are not present, the row is taken out of the dataframe
     """
     contract_type = str(contract_type).lower().split()
-    if "cdi" in contract_type:
-        return "CDI"
-    elif "cdd" in contract_type:
+    considered_cdi = ["cdi", "contract", "full_time", "part_time", "permanent", "partiel"]
+    for type_contract in considered_cdi:
+        if type_contract in contract_type:
+            return "CDI"
+    if "cdd" in contract_type:
         return "CDD"
     elif "alternance" in contract_type:
         return "Alternance"
@@ -74,10 +74,10 @@ def run():
           \t - quels secteurs recrutent le plus ?   \n \
           \t - combien d\'entreprises par secteur ont publié des annonces ?   \n \
           \t - quelles sont les compétences les plus demandées ?   \n \
-          \t - quel est le contrat majoritairement proposé dans les annonces ?   \n \
+          \t - quel est le contrat majoritairement proposé dans les annonces ? \n \
           \t - quelle est la zone géographique avec le plus d\'offres ?  \n "
     st.write(introduction)
-    tab0, tab1, tab2, tab3, tab4 = st.tabs(["Les secteurs qui recrutent le plus",
+    tab0, tab1, tab2, tab3, tab4 = st.tabs(["Les secteurs qui recrutent",
                                             "Les entreprises par secteurs",
                                             "Les compétences recherchées",
                                             "Les contrats proposés",
@@ -120,9 +120,10 @@ def run():
             return pd.DataFrame(response.json(), columns=['contracttype', 'number_offer'])
 
         all_contracts = fetch_data_contract("joboffers_contracts")
+        st.dataframe(all_contracts)
         with col0:
             # Worth mentionning, the nunique() method does NOT include the None values
-            st.write(f"Initialement, les {all_contracts.number_offer.sum()} annonces récupérées sont réparties en {all_contracts['contracttype'].nunique()} types de contrat possibles.\n")
+            st.write(f"  \n Initialement, les **{all_contracts.number_offer.sum()} annonces** * récupérées sont réparties en {all_contracts['contracttype'].nunique()} types de contrat possibles.\n")
             unspecified_contracts = all_contracts.loc[all_contracts.contracttype.isnull(), ['number_offer']].values[0]
 
             all_contracts['contracttype'] = all_contracts['contracttype'].apply(lambda x : sort_contracttypes(x))
@@ -131,25 +132,16 @@ def run():
             result = known_contracts.groupby('contracttype')['number_offer'].sum().reset_index()
             result.sort_values('number_offer', inplace=True, ascending=False)
             st.write(f"\
-            Pour une meilleure lisibilité, nous les avons rassemblées en 5 catégories* : \n \
-            - CDI \
-            - CDD \
-            - Freelance \
-            - Alternance \
-            - Stage\n \
-            *sans compter donc les {int(unspecified_contracts)} annonces où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données.")
-
-       
+            Pour une meilleure lisibilité, nous les avons rassemblées en **5 catégories** :  \n \
+            - CDI  \n\
+            - CDD  \n\
+            - Freelance  \n \
+            - Alternance  \n \
+            - Stage  \n\
+             \n *sans compter donc les {int(unspecified_contracts)} annonces où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données.  \n \
+             La figure représentent la répartition des {int(result['number_offer'].sum())} annonces restantes")
 
         with col1:
-            #fig = px.pie(
-            #    result,  names="contracttype", values="number_offer", title='Les 5 contrats possibles',
-            #    color='number_offer', color_discrete_sequence=px.colors.sequential.Viridis,
-            #    labels={'contracttype': 'Contrats', 'number_offer': 'Nombre d\'annonces'}, hover_data=['number_offer'],
-            #)
-            ##fig.update_traces(textposition='inside', textinfo='labels')
-            #st.plotly_chart(fig)
-
             fig = px.bar(
                 result,  x="contracttype", y="number_offer", title='Les 5 contrats possibles',
                 labels={'contracttype': 'Contrats', 'number_offer': 'Nombre d\'annonces'},
