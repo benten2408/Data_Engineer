@@ -12,6 +12,8 @@ import os
 #import json
 #import time 
 import plotly.express as px
+import company_cleaning
+import sector_cleaning
 #import plotly.graph_objects as go
 
 API_BASE_URL = os.environ['API_BASE_URL']
@@ -71,15 +73,16 @@ def sort_contracttypes(contract_type):
 def run():
     titre = "Projet Jobmarket : les offres d'emplois pour Data Engineers en France"
     st.title(titre)
-    introduction = '''Dans le cadre de la [formation de Data Engineer par DataScientest](https://datascientest.com/formation-data-engineer) au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.  
+    introduction = '''
+    Dans le cadre de la [formation de Data Engineer par DataScientest](https://datascientest.com/formation-data-engineer) au format bootcamp de janvier à avril 2024, nous avons eu l'occasion de réaliser un projet en groupe.  
     Voici le résultat de nos recherches sur les **offres d\'emplois de Data Engineer publiées en France au cours des 30 derniers jours**.  
     Nous avons récolté les annonces publiées sur [Welcome to The Jungle](https://www.welcometothejungle.com/en) et via l'[API d'Adzuna](https://www.adzuna.fr), deux aggrégateurs.  
     Notre objectif est de répondre à ces 5 questions :   
-      - quels secteurs recrutent le plus ?   
-      - combien d\'entreprises par secteur ont publié des annonces ?   
-      - quelles sont les compétences les plus demandées ?  
-      - quel est le contrat majoritairement proposé dans les annonces ?  
-      - quelle est la zone géographique avec le plus d\'offres ?  '''
+    - quels secteurs recrutent le plus ?   
+    - combien d\'entreprises par secteur ont publié des annonces ?   
+    - quelles sont les compétences les plus demandées ?  
+    - quel est le contrat majoritairement proposé dans les annonces ?  
+    - quelle est la zone géographique avec le plus d\'offres ?  '''
     st.markdown(introduction)
     tab0, tab1, tab2, tab3, tab4 = st.tabs(["Les secteurs qui recrutent",
                                             "Les entreprises par secteurs",
@@ -89,12 +92,31 @@ def run():
 
     with tab0:
         st.header("Quels secteurs recrutent le plus ?")
-        # géré par Jean 
 
+        fig1 = px.bar(
+            x=company_cleaning.df_company_sector.group_company, 
+            y=company_cleaning.df_company_sector.nombre_offres,
+            title='Nombre d\'offres par secteur',
+            labels={'x': 'Secteur', 'y': 'Total offres'},
+            color =company_cleaning.df_company_sector.nombre_offres, 
+            color_continuous_scale=px.colors.sequential.Viridis    
+        )
+        st.plotly_chart(fig1)
 
     with tab1:
         st.header("Combien d'entreprises par secteur ont publié des annonces ?")
         # géré par Jean
+        sector_cleaning.sectors_counts
+        fig2 = px.bar(
+            x=sector_cleaning.sectors_counts.index, 
+            y=sector_cleaning.sectors_counts.values,
+            title='Nombre d\'entreprises par secteur', 
+            labels={'x': 'SECTEUR', 'y': 'Nombre d\'entreprises'},
+            color=sector_cleaning.sectors_counts.values,
+            color_continuous_scale=px.colors.sequential.Viridis
+            )
+        st.plotly_chart(fig2)
+
 
     with tab2:
         st.header("Quelles sont les compétences les plus demandées ?")

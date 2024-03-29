@@ -193,3 +193,49 @@ async def get_full_location_coordinates():
 	return locations.to_dict(orient="records")
 
 
+
+@api.get("/companies/sector")
+async def get_sector():
+	conn = get_db_connection()
+	cur = conn.cursor()
+	sector = cur.execute(
+		"""
+            SELECT DISTINCT(sector), COUNT(companyid) AS number_companies
+            FROM companies
+            GROUP BY sector;
+   
+		"""
+	)
+	sector = cur.fetchall()
+
+	conn.commit()
+	cur.close()
+	conn.close()
+
+	return sector         
+
+@api.get("/companies/company_sector")
+async def get_company_sector():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    company_sector = cur.execute(
+        """
+            SELECT 
+                c.sector AS secteur,
+                COUNT(jo.jobofferid) AS nombre_offres
+            FROM 
+                Companies c
+            INNER JOIN 
+                JobOffers jo ON c.companyid = jo.companyid
+            GROUP BY 
+                c.sector
+            ORDER BY 
+                COUNT(jo.jobofferid) DESC;
+        """
+    )
+    company_sector = cur.fetchall()
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    return company_sector
