@@ -68,14 +68,14 @@ def create_schema_query(cur):
             postal_code NUMERIC,
             PRIMARY KEY (location)
         );
-        """,
+        """, 
         """
         CREATE TABLE Users (
             username VARCHAR(255),
             password  VARCHAR(255),
             PRIMARY KEY (username)
         );
-        """
+        """, 
 
     )
 

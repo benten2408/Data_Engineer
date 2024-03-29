@@ -181,18 +181,7 @@ def location_process(cur):
 	ingest_location(cur)
 
 
-def get_or_create_user(cur, user, password):
-    pass
-	"""
-     response = requests.get(url).json()
-		if response:
-          
-    cur.execute("SELECT * FROM Users WHERE username = %s;", (username,))
-    result = cur.fetchone()
-    if result:
-        return result[0]
-    else:
-        cur.execute("INSERT INTO Users (username, password) VALUES (%s, %s);",
-                    (user, password))
-        return cur.fetchone()[0] 
-        """
+def create_user(cur, test_user, test_hashed_password):
+    cur.execute("INSERT INTO Users (username, password) VALUES (%s, %s);",
+                (test_user, test_hashed_password))
+    

@@ -38,6 +38,7 @@ def get_db_connection():
     return conn
 
 
+
 def get_user(db, username: str):
     if username in db:
         user_dict = db[username]
@@ -177,3 +178,23 @@ async def get_full_location_coordinates():
 	locations = locations.dropna()
 	conn.close()
 	return locations.to_dict(orient="records")
+
+
+
+def get_user_from_postgresql():
+	conn = get_db_connection()
+	result = pd.read_sql("SELECT * FROM users", conn)
+	users_db = dict()
+    # Iterate over the rows in the result DataFrame
+	for index, row in result.iterrows():
+    	# Hash the password using a secure hashing algorithm (e.g., bcrypt)
+    	pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    	"hashed_password": pwd_context.hash(row['password'])
+    	# Create a dictionary entry for each user
+    	users_db[row['username']] = {
+    	    'username': row['username'],
+    	    'hashed_password': hashed_password
+    	}
+	conn.close()
+
+	return users_db

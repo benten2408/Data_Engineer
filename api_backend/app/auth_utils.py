@@ -17,14 +17,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": pwd_context.hash('secret'),
-    }
-}
+users_db = get_user_from_postgresql()
 
 def hash_password(password: str) -> str:
     """
