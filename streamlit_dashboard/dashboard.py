@@ -17,12 +17,13 @@ import plotly.express as px
 API_BASE_URL = os.environ['API_BASE_URL']
 st.set_page_config(layout="wide")
 
-st.write(st.session_state)
-st.write(st.session_state=={})
+#st.write(st.session_state)
+#st.write(st.session_state=={})
 
-if (st.session_state=={}) or not st.session_state['access_token']:
+
+if 'access_token' not in st.session_state:
     st.session_state['access_token'] = None
-st.write(st.session_state)
+#st.write(st.session_state)
 headers = {"Authorization": f"Bearer {st.session_state['access_token']}"}
 
 # a ejecter dans un autre fichier

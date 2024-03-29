@@ -8,6 +8,7 @@ API_BASE_URL = os.environ['API_BASE_URL']
 
 def authenticate_user(username: str, password: str):
     """Authenticate user by making a request to the FastAPI backend."""
+    st.write("dans streamlit/app.py authenticate_user juste avant requests.post")
     response = requests.post(f"{API_BASE_URL}/token", data={"username": username, "password": password})
     if response.status_code == 200:
         return response.json()
