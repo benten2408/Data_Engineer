@@ -105,7 +105,6 @@ def run():
 
     with tab1:
         st.header("Combien d'entreprises par secteur ont publié des annonces ?")
-        # géré par Jean
         sector_cleaning.sectors_counts
         fig2 = px.bar(
             x=sector_cleaning.sectors_counts.index, 
@@ -230,7 +229,7 @@ def run():
         unknown_locations = all_offers.location.isnull().sum()
 
         # attention voir si 'Schiltigheim, Strasbourg-Campagne' pose problème (alors 19 lignes à retirer) ou pas 
-        f"Pour information sur les **{len(all_offers)} annonces récupérées**, seules {unknown_locations} ont été retirées faute de lieu précisé."
+        st.write(f"Pour information sur les **{len(all_offers)} annonces récupérées**, seules {unknown_locations} ont été retirées faute de lieu précisé.")
         #on ne garde que les lignes où la 'location' est connue
         not_all_offers = all_offers.dropna(subset = ['location'])
 
@@ -301,7 +300,7 @@ def run():
         #"all_offers_located"
 
         hover_data = {"sum_of_job_offers":False,
-                    "Nombre d'annonce " : all_offers_located['sum_of_job_offers'], #à améliorer
+                    "Nombre d'annonces " : all_offers_located['sum_of_job_offers'], #à améliorer
                     'latitude':False, # remove latitude from hover data
                     'longitude':False, # remove longitude from hover data
                     'location':False} # remove location from hover data
@@ -342,10 +341,23 @@ def run():
         fig.update_layout(width=1000, height=800)
         st.plotly_chart(fig)
 
+
+        city_to_display = st.selectbox("Visualisez les annonces disponibles dans la ville de …", 
+                                        options=all_offers_located.city.sort_values().unique(),
+                                        placeholder="Paris", disabled=False, label_visibility="visible")
+        #st.write(city_to_display)
+        #st.dataframe(all_offers_located.loc[all_offers_located['city' == city_to_display]])
+        #all_offers_located.loc[all_offers_located['city' == city_to_display], "joblink"]
+        to_display = all_offers_located[all_offers_located['city'] == city_to_display].head(10)
+        st.write(f"Voici le top {len(to_display)} des annonces disponibles à {city_to_display} :")
+        st.dataframe(to_display)
+
+
+
     # ajout lien annonce
     # ajout lien url cliquable
     
     # ajout bouton pour centrer France métropolitaine 
     # trouver solution pour découper avec dom tom en bas à gauche et idf en haut à gauche agrandie
 
-    # corriger les coordonées différentes pour des mêmes noms de villes 
+    # corriger les coordonées différentes pour des mêmes noms de villes ok
