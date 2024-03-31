@@ -6,11 +6,6 @@ from dashboard import run
 
 API_BASE_URL = os.environ['API_BASE_URL']
 st.set_page_config(page_title="JobMarket Project",  page_icon="🧑‍💻",layout="wide", initial_sidebar_state='collapsed')
-#, menu_items={
-#        'Get Help': 'https://www.extremelycoolapp.com/help',
-#        'Report a bug': "https://www.extremelycoolapp.com/bug",
-#        'About': "# This is a header. This is an *extremely* cool app!"
-#    })
 
 def authenticate_user(username: str, password: str):
     """Authenticate user by making a request to the FastAPI backend."""
