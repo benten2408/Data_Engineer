@@ -113,6 +113,14 @@ async def get_companies(token_checked: bool = Depends(token_present)):
 	return companies.to_dict(orient="records")
 
 
+@api.get("/company_name_id")
+async def company_name_id(token_checked: bool = Depends(token_present)):
+	conn = get_db_connection()
+	company_name_id = pd.read_sql("SELECT companyname, companyid FROM companies", conn)
+	conn.close()
+	return company_name_id.to_dict(orient="records")
+
+
 @api.get("/skills")
 async def get_skills(token_checked: bool = Depends(token_present)):
 	conn = get_db_connection()

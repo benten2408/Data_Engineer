@@ -366,6 +366,15 @@ def run():
         st.plotly_chart(fig)
 
 
+        def fetch_company_name_id(endpoint):
+            """
+            to complete
+            """
+            response = requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers)
+            #st.write(response)
+            return pd.DataFrame(response.json(), columns=['companyname', 'companyid'])
+
+
         city_to_display = st.selectbox("Visualisez les annonces disponibles dans la ville de …", 
                                         options=all_offers_located.city.sort_values().unique(),
                                         placeholder="Paris", disabled=False, label_visibility="visible")
@@ -377,15 +386,22 @@ def run():
             st.write(f"Voici la seule annonce disponible à **{city_to_display}** :")
         else:
             st.write(f"Voici le top {len(to_display)} des annonces disponibles à **{city_to_display}** :")
-        st.dataframe(to_display) # to improve with actual sentences presenting the company name …
+        
+        company_name_id = fetch_company_name_id("company_name_id")
 
-
-
-
-    # ajout lien annonce
-    # ajout lien url cliquable
-    
+        for index, row in to_display.reset_index().iterrows():
+            company_name = company_name_id[company_name_id['companyid'] == row['companyid']].iloc[0, 0]
+            if index+1 >= 2:
+                st.divider() 
+            details_start = f'''- L'annonce n°{index+1} est **{row['title']}** chez **{company_name}**.  \n ''' 
+            details_description = f'''La description fournie est  \n« {row["descriptions"]}. » ''' if row["descriptions"] is not None else '''  \nDésolée, nous n'avons pas pu obtenir plus d'informations sur cette annonce.'''
+            details_salary = f'''  \nLe salaire indiqué est : {row["salary"]}.''' if (row["salary"] is not '0') else '''   \nLa grille salariale n'est pas mentionnée.'''
+            details_end = f'''  \nPour postuler, rendez-vous directement sur [ce lien]({row['joblink']})'''
+            st.write(details_start+details_description+details_salary+details_end)    
     # ajout bouton pour centrer France métropolitaine 
     # trouver solution pour découper avec dom tom en bas à gauche et idf en haut à gauche agrandie
+    # réfléchir à potentielle proposition pour aller plus loin et voir l'intégralité des offres
+    # réfléchir au lien map <> selectbox 
+    # si souris hover map > selectbox active 
+    # si selectbox active > point sur map affiche
 
-    # corriger les coordonées différentes pour des mêmes noms de villes ok
