@@ -7,3 +7,8 @@ fileWatcherType = "poll"
 
 [browser]
 gatherUsageStats = false
+
+[theme]
+base="light"
+primaryColor="#1377e6"
+secondaryBackgroundColor="#c5d8f5"
