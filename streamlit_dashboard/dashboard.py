@@ -71,6 +71,27 @@ def sort_contracttypes(contract_type):
         return None
 
 def run():
+
+    with st.sidebar:
+        st.sidebar.header("Les données derrières les visualisations")
+        side_bar = '''
+        Comme vous pourrez le lire dans notre [rapport] (lien url à ajouter in fine), nous avons créé 7 tables : 
+        - Companies
+        - Job Offers
+        - JobOffer_Skils
+        - Locations
+        - Skills
+        - Sources
+        - Users
+        \n
+        Pour voir une de ces tables au format brut, faites votre choix :'''
+        st.write(side_bar)
+        table_to_display = st.selectbox("Quelle table souhaiteriez-vous voir ?",
+                                        options=['Companies', 'Job Offers', 'Sources', 'Skills', 'jobOffer_Skils', 'Locations', 'Users'],
+                                        placeholder="Job Offers", label_visibility="collapsed")
+        #st.dataframe(table_to_display)
+
+
     titre = "Projet Jobmarket : les offres d'emplois pour Data Engineers en France"
     st.title(titre)
     introduction = '''
@@ -156,14 +177,16 @@ def run():
             known_contracts = all_contracts.dropna(subset = ['contracttype'])
             result = known_contracts.groupby('contracttype')['number_offer'].sum().reset_index()
             result.sort_values('number_offer', inplace=True, ascending=False)
-            details = f'''Pour une meilleure lisibilité, nous les avons rassemblées en **5 catégories** :  
+            details = f'''
+            Pour une meilleure lisibilité, nous les avons rassemblées en **5 catégories** :  
             - CDI  
             - CDD  
             - Freelance  
             - Alternance  
             - Stage  
-             * _sans compter donc les {int(unspecified_contracts)} annonces_ où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données.  \n \
-             La figure représente donc la répartition des {int(result['number_offer'].sum())} annonces restantes'''
+             (*) sans compter donc _les {int(unspecified_contracts)} annonces_ où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données.  \
+            \n
+            La figure à droite représente donc la répartition des :red[{int(result['number_offer'].sum())} annonces] restantes'''
             st.markdown(details)
 
         with col1:
@@ -228,10 +251,11 @@ def run():
         # nombre de "location" nulles
         unknown_locations = all_offers.location.isnull().sum()
 
-        # attention voir si 'Schiltigheim, Strasbourg-Campagne' pose problème (alors 19 lignes à retirer) ou pas 
-        st.write(f"Pour information sur les **{len(all_offers)} annonces récupérées**, seules {unknown_locations} ont été retirées faute de lieu précisé.")
         #on ne garde que les lignes où la 'location' est connue
         not_all_offers = all_offers.dropna(subset = ['location'])
+        # attention voir si 'Schiltigheim, Strasbourg-Campagne' pose problème (alors 19 lignes à retirer) ou pas 
+        st.write(f"Pour information sur les **{len(all_offers)} annonces récupérées**, seules {unknown_locations} ont été retirées faute de lieu précisé. \
+                 \n Voici la répartition des :red[{len(not_all_offers)} offres restantes].")
 
         # on crée un nouveau dataframe par merge en ajoutant les 4 colonnes au dataframe complet de toutes les joboffers localisées
         all_offers_located = not_all_offers.merge(location_coordinates[['location', 'latitude', 'longitude', 'city', 'postal_code']], on='location', how='left')
@@ -349,8 +373,12 @@ def run():
         #st.dataframe(all_offers_located.loc[all_offers_located['city' == city_to_display]])
         #all_offers_located.loc[all_offers_located['city' == city_to_display], "joblink"]
         to_display = all_offers_located[all_offers_located['city'] == city_to_display].head(10)
-        st.write(f"Voici le top {len(to_display)} des annonces disponibles à {city_to_display} :")
-        st.dataframe(to_display)
+        if len(to_display) == 1:
+            st.write(f"Voici la seule annonce disponible à **{city_to_display}** :")
+        else:
+            st.write(f"Voici le top {len(to_display)} des annonces disponibles à **{city_to_display}** :")
+        st.dataframe(to_display) # to improve with actual sentences presenting the company name …
+
 
 
 
