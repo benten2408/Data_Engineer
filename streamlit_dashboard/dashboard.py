@@ -14,6 +14,7 @@ import os
 import plotly.express as px
 import company_cleaning
 import sector_cleaning
+#from api_backend/app.main import get_user_from_postgresql
 #import plotly.graph_objects as go
 
 API_BASE_URL = os.environ['API_BASE_URL']
@@ -73,12 +74,18 @@ def sort_contracttypes(contract_type):
 def run():
 
     with st.sidebar:
+
+        def fetch_full_table(endpoint):
+            response = requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers)
+            st.write(response)
+            return pd.DataFrame(response.json())
+
         st.sidebar.header("Les données derrières les visualisations")
         side_bar = '''
         Comme vous pourrez le lire dans notre [rapport] (lien url à ajouter in fine), nous avons créé 7 tables : 
         - Companies
         - Job Offers
-        - JobOffer_Skils
+        - JobOffer_Skills
         - Locations
         - Skills
         - Sources
@@ -87,9 +94,28 @@ def run():
         Pour voir une de ces tables au format brut, faites votre choix :'''
         st.write(side_bar)
         table_to_display = st.selectbox("Quelle table souhaiteriez-vous voir ?",
-                                        options=['Companies', 'Job Offers', 'Sources', 'Skills', 'jobOffer_Skils', 'Locations', 'Users'],
+                                        options=['Companies', 'Job Offers', 'JobOffer_Skills', 'Locations', 'Skills', 'Sources', 'Users'],
                                         placeholder="Job Offers", label_visibility="collapsed")
-        #st.dataframe(table_to_display)
+        st.write("""🚨⚠️🚧VOIR AVEC NAM car erreur 401 Undocumented	Error: Unauthorized Response body{"detail": "Not authenticated"}""")
+        """
+        match table_to_display:
+            case "Companies":
+                companies = fetch_full_table("/companies")
+                st.dataframe(companies)
+            case "Job Offers":
+                st.dataframe(fetch_full_table("/joboffers"))
+            case "JobOffer_Skills":
+                st.dataframe(fetch_full_table("/joboffer_skills"))
+            case "Locations":
+                st.dataframe(fetch_full_table("/coordinates_full"))
+            case "Skills":
+                st.dataframe(fetch_full_table("/skills"))
+            case "Sources":
+                st.dataframe(fetch_full_table("/sources"))
+            case "Users":
+                st.write("That is our secret")
+                #st.dataframe(get_user_from_postgresql())
+            """
 
 
     titre = "Projet Jobmarket : les offres d'emplois pour Data Engineers en France"
@@ -398,10 +424,16 @@ def run():
             details_salary = f'''  \nLe salaire indiqué est : {row["salary"]}.''' if (row["salary"] is not '0') else '''   \nLa grille salariale n'est pas mentionnée.'''
             details_end = f'''  \nPour postuler, rendez-vous directement sur [ce lien]({row['joblink']})'''
             st.write(details_start+details_description+details_salary+details_end)    
-    # ajout bouton pour centrer France métropolitaine 
-    # trouver solution pour découper avec dom tom en bas à gauche et idf en haut à gauche agrandie
-    # réfléchir à potentielle proposition pour aller plus loin et voir l'intégralité des offres
+    
+    
+
+    # catégorie d'améliorations : 
+        # MAP ajout bouton pour centrer France métropolitaine 
+        # MAP trouver solution pour découper avec dom tom en bas à gauche et idf en haut à gauche agrandie
     # réfléchir au lien map <> selectbox 
     # si souris hover map > selectbox active 
     # si selectbox active > point sur map affiche
+    
+    # amélioration quand descriptif sur plusieurs lignes
+    # réfléchir à potentielle proposition pour aller plus loin et voir l'intégralité des offres
 
