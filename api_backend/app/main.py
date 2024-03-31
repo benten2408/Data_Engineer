@@ -183,15 +183,6 @@ async def get_joboffers_contracts(token_checked: bool = Depends(token_present)):
 	return joboffers_contracts.to_dict(orient="records")
 
 
-@api.get("/coordinates")
-async def get_location_coordinates():
-	conn = get_db_connection()
-	locations = pd.read_sql("SELECT location, latitude, longitude FROM locations", conn)
-	locations = locations.dropna()
-	conn.close()
-	return locations.to_dict(orient="records")
-
-
 @api.get("/coordinates_full")
 async def get_full_location_coordinates():
 	conn = get_db_connection()
@@ -199,7 +190,6 @@ async def get_full_location_coordinates():
 	locations = locations.dropna()
 	conn.close()
 	return locations.to_dict(orient="records")
-
 
 
 @api.get("/companies/sector")
@@ -221,6 +211,7 @@ async def get_sector():
 	conn.close()
 
 	return sector         
+
 
 @api.get("/companies/company_sector")
 async def get_company_sector():

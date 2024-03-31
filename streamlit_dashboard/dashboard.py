@@ -3,53 +3,21 @@
 This script uses streamlit to provide an app-like interface
 enabling some interaction with the vizualisations
 """
-#ces imports seront in fine dans streamlit_dashboard/requirements.txt
 import pandas as pd
 import streamlit as st
-#import matplotlib.pyplot as plt
 import requests
 import os
-#import json
-#import time 
 import plotly.express as px
 from datetime import datetime
 import company_cleaning
 import sector_cleaning
-from mapbox import create_map
-import mapboxgl
-# import locale
-
-# loc = locale.getlocale(locale.LC_ALL)
-# st.write(loc)
-# locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8') ## Error: unsupported locale setting  apt-get install apt-get install packages.txt
-#from api_backend/app.main import get_user_from_postgresql
-#import plotly.graph_objects as go
 
 API_BASE_URL = os.environ['API_BASE_URL']
 
-#st.write(st.session_state)
-#st.write(st.session_state=={})
-
-
 if 'access_token' not in st.session_state:
     st.session_state['access_token'] = None
-#st.write(st.session_state)
-headers = {"Authorization": f"Bearer {st.session_state['access_token']}"}
 
-# a ejecter dans un autre fichier
-def clean_location_column(df):
-    """
-    to clean all rows where location is Null
-    to know how many f"{all.isnull().value_counts()}"
-    reset_index to make sure indexes pair with number of rows
-    """
-    #cleaned_column_df = df.dropna(subset=column).reset_index(drop=True)
-    location = df['location']
-    location_list_unique = set(str(location).lower().split())
-    #for name in location_list_unique:
-    #    print(name)
-    #df['location_cleaned'] = cleaned_location_column_df['location']
-    return location_list_unique
+headers = {"Authorization": f"Bearer {st.session_state['access_token']}"}
 
 # a ranger dans un autre fichier
 def sort_contracttypes(contract_type):
@@ -135,11 +103,11 @@ def run():
     Voici le résultat de nos recherches sur les **offres d\'emplois de Data Engineer publiées en France au cours des 30 derniers jours** *.  
     Au total nous avons récolté **1 342 annonces** soit sur [Welcome to The Jungle](https://www.welcometothejungle.com/en) soit via l'[API d'Adzuna](https://www.adzuna.fr), deux aggrégateurs.  
     Notre objectif est de répondre à ces **5 questions** :   
-    - quels secteurs recrutent le plus ?   
-    - combien d\'entreprises par secteur ont publié des annonces ?   
-    - quelles sont les compétences les plus demandées ?  
-    - quel est le contrat majoritairement proposé dans les annonces ?  
-    - quelle est la zone géographique avec le plus d\'offres ?  
+    - quels **secteurs** recrutent le plus ?   
+    - combien d\'**entreprises** par secteur ont publié des annonces ?   
+    - quelles sont les **compétences** les plus demandées ?  
+    - quel est le **contrat** majoritairement proposé dans les annonces ?  
+    - quelle est la **zone géographique** avec le plus d\'offres ?  
       \n _(*) à la date du 24 février 2024_'''
     st.markdown(introduction)
 
@@ -225,47 +193,33 @@ def run():
             - Stage  \n
              (*) sans compter donc _les {int(unspecified_contracts)} annonces_ où le contrat n'est pas mentionné et qui ont donc été retirées du jeu de données.  \
             \n
-            La figure à droite représente donc la répartition des **{int(result['number_offer'].sum())} annonces restantes**.'''
+            ##### La figure à droite représente donc la répartition des {int(result['number_offer'].sum())} annonces restantes.'''
             st.markdown(details)
 
         with col1:
-            fig = px.bar(
-                result,  x="contracttype", y="number_offer", 
-                labels={'contracttype': 'Contrats ', 'number_offer': 'Nombre d\'annonces '},
-                text="number_offer",
-                color='number_offer', color_continuous_scale=px.colors.sequential.Viridis
-            )
-            fig.update_yaxes(showgrid=True, gridwidth=1, title_text='')
-            fig.update_xaxes(showgrid=False, title_text='')
-            fig.update_layout(autosize=True)
-            fig.update_layout(title={'text': "Les 5 contrats possibles",
-                'y':0.9,
-                'x':0.5,
-                'xanchor': 'center',
-                'yanchor': 'top'})
-            st.plotly_chart(fig)
+            fig2 = px.pie(result, values="number_offer", names="contracttype", 
+                        color=result.number_offer, hole=0.3,
+                        labels={'contracttype': 'Type de contrat ', 
+                                'number_offer': 'Nombre d\'annonces '},
+                        color_discrete_sequence=px.colors.sequential.Viridis_r)
+            fig2.update_layout(title={'text': "Les 5 contrats possibles",
+                                      'y':0.95,'x':0.5, 'xanchor': 'center',
+                                      'yanchor': 'top'}, height=600)
+            fig2.update_traces(marker = dict(line = dict(color = 'white', width = 1)))
+            fig2.update_traces(textinfo='label+percent',hoverinfo='label', showlegend = False, rotation=180)
+            st.plotly_chart(fig2, use_container_height=True, use_container_width=True)
 
     with tab4:
         st.header("Quelle est la répartition géographique des offres ?")
 
-        def fetch_full_table_job_offers(endpoint):
-            """
-            to complete 
-            """
+        def fetch_full_table(endpoint):
             response = requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers)
             return pd.DataFrame(response.json())
 
-        def fetch_full_location_coordinates(endpoint):
-            """
-            to complete
-            """
-            response = requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers)
-            return pd.DataFrame(response.json(), columns=['location', 'latitude', 'longitude', 'city', 'postal_code'])
-
         # getting all the offers
-        all_offers_full = fetch_full_table_job_offers("joboffers")        
+        all_offers_full = fetch_full_table("joboffers")        
         # getting latitude, longitude, city every unique location
-        location_coordinates = fetch_full_location_coordinates("coordinates_full")
+        location_coordinates = fetch_full_table("coordinates_full")
         # nombre de "location" nulles
         unknown_locations = all_offers_full.location.isnull().sum()
         #on ne garde que les lignes où la 'location' est connue
@@ -299,7 +253,7 @@ def run():
         all_offers_located.drop(['latitude_mean', 'longitude_mean'], axis=1, inplace=True)
         distinct_city = all_offers_located.groupby(by="city")["city"].unique().value_counts().sum()
         st.write(f"Pour information - sur les {len(all_offers_full):,} annonces récupérées - seules {unknown_locations} ont été retirées faute de lieu précisé. \
-                 \n Voici la répartition des **{len(not_all_offers):,} offres restantes** dans {distinct_city} villes.".replace(',', ' '))
+                 Voici la répartition des **{len(not_all_offers):,} offres restantes dans {distinct_city} villes**.".replace(',', ' '))
         job_offer_count_sum = all_offers_located.groupby(by="city")["job_offer_count"].sum()
         job_offer_count_sum_dict = job_offer_count_sum.to_dict()
         # associer le bon nombres d'offres disponibles en fonction de la ville via la function function map
@@ -316,14 +270,10 @@ def run():
                                 size_max=50, zoom=5, mapbox_style='light')
         fig.update_layout(height=800)
         st.plotly_chart(fig, use_container_width=True)
+
         def fetch_company_name_id(endpoint):
-            """
-            to complete
-            """
             response = requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers)
             return pd.DataFrame(response.json(), columns=['companyname', 'companyid'])
-
-
         city_to_display = st.selectbox("Visualisez les annonces disponibles dans la ville de …", 
                                         options=all_offers_located.city.sort_values().unique(),
                                         placeholder="Paris", disabled=False, label_visibility="visible")
