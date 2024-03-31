@@ -1,5 +1,7 @@
 folium==0.16.0
+IPython==8.22.2
 matplotlib==3.8.3
+mapboxgl==0.10.2
 pandas==2.0.3
 plotly==5.20.0
 streamlit==1.31.1
