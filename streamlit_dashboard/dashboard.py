@@ -260,20 +260,30 @@ def run():
         all_offers_located['sum_of_job_offers'] = all_offers_located['city'].map(job_offer_count_sum_dict)
         px.set_mapbox_access_token(open(".mapbox_token").read())
         hover_data = {"Nombre d'annonces " : all_offers_located['sum_of_job_offers'],
+                      "Pourcentage ": (all_offers_located['sum_of_job_offers']*100)/all_offers_located.shape[0],
                       "sum_of_job_offers":False,
                       "latitude":False, "longitude":False, "location":False}
         fig = px.scatter_mapbox(all_offers_located, lat="latitude", lon="longitude",
                                 hover_name="city", hover_data=hover_data,
                                 color="sum_of_job_offers", size="sum_of_job_offers",
+                                custom_data=[all_offers_located['sum_of_job_offers'], (all_offers_located['sum_of_job_offers']*100)/all_offers_located.shape[0]],
                                 center={'lat':46.49388889,'lon':2.60277778},
                                 color_continuous_scale=px.colors.sequential.Viridis, 
                                 size_max=50, zoom=5, mapbox_style='light')
+        fig.update_traces(
+            hovertemplate="<br>".join([
+                "Nombre d'annonces : %{customdata[0]}",
+                "Pourcentage : %{customdata[1]:.1f} %"
+            ])
+        )
         fig.update_layout(height=800)
         st.plotly_chart(fig, use_container_width=True)
+        st.write(all_offers_located.shape[0])
 
         def fetch_company_name_id(endpoint):
             response = requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers)
             return pd.DataFrame(response.json(), columns=['companyname', 'companyid'])
+
         city_to_display = st.selectbox("Visualisez les annonces disponibles dans la ville de …", 
                                         options=all_offers_located.city.sort_values().unique(),
                                         placeholder="Paris", disabled=False, label_visibility="visible")
