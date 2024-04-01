@@ -259,26 +259,29 @@ def run():
         # associer le bon nombres d'offres disponibles en fonction de la ville via la function function map
         all_offers_located['sum_of_job_offers'] = all_offers_located['city'].map(job_offer_count_sum_dict)
         px.set_mapbox_access_token(open(".mapbox_token").read())
-        hover_data = {"Nombre d'annonces " : all_offers_located['sum_of_job_offers'],
-                      "Pourcentage ": (all_offers_located['sum_of_job_offers']*100)/all_offers_located.shape[0],
-                      "sum_of_job_offers":False,
-                      "latitude":False, "longitude":False, "location":False}
         fig = px.scatter_mapbox(all_offers_located, lat="latitude", lon="longitude",
-                                hover_name="city", hover_data=hover_data,
                                 color="sum_of_job_offers", size="sum_of_job_offers",
-                                custom_data=[all_offers_located['sum_of_job_offers'], (all_offers_located['sum_of_job_offers']*100)/all_offers_located.shape[0]],
+                                custom_data=[all_offers_located['city'], all_offers_located['sum_of_job_offers'], (all_offers_located['sum_of_job_offers']*100)/all_offers_located.shape[0]],
                                 center={'lat':46.49388889,'lon':2.60277778},
                                 color_continuous_scale=px.colors.sequential.Viridis, 
                                 size_max=50, zoom=5, mapbox_style='light')
-        fig.update_traces(
-            hovertemplate="<br>".join([
-                "Nombre d'annonces : %{customdata[0]}",
-                "Pourcentage : %{customdata[1]:.1f} %"
-            ])
-        )
+        fig.update_traces(hovertemplate="<br>".join(["<b>%{customdata[0]}</b>",
+            "Nombre d'annonces : %{customdata[1]}",
+            "Pourcentage : %{customdata[2]:.1f} %"]))
         fig.update_layout(height=800)
-        st.plotly_chart(fig, use_container_width=True)
-        st.write(all_offers_located.shape[0])
+        
+        #st.plotly_chart(fig, use_container_width=True)
+        from streamlit_plotly_mapbox_events import plotly_mapbox_events
+        # Create an instance of the plotly_mapbox_events component
+        mapbox_events = plotly_mapbox_events(
+            fig,
+            click_event=True,
+            override_height=800
+        )
+
+        # Display the captured events
+        plot_name_holder_clicked = st.empty()
+        plot_name_holder_clicked.write(f"Clicked Point: {mapbox_events[0]}")
 
         def fetch_company_name_id(endpoint):
             response = requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers)
