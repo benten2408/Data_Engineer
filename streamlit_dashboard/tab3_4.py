@@ -13,6 +13,8 @@ from streamlit_plotly_events import plotly_events
 
 API_BASE_URL = os.environ['API_BASE_URL']
 
+if 'access_token' not in st.session_state:
+    st.session_state['access_token'] = None
 headers = {"Authorization": f"Bearer {st.session_state['access_token']}"}
 
 def sort_contracttypes(contract_type):
@@ -136,7 +138,6 @@ def presentation():
                 Voici la répartition des **{len(not_all_offers):,} offres restantes dans {distinct_city} villes**.".replace(',', ' '))
     job_offer_count_sum = all_offers_located.groupby(by="city")["job_offer_count"].sum()
     job_offer_count_sum_dict = job_offer_count_sum.to_dict()
-    # associer le bon nombres d'offres disponibles en fonction de la ville via la function function map
     all_offers_located['sum_of_job_offers'] = all_offers_located['city'].map(job_offer_count_sum_dict)
     fig = create_px_scatter_mapbox(all_offers_located)
     return fig, all_offers_located
@@ -145,7 +146,6 @@ def tall_presentation(fig, offers_df):
     st.plotly_chart(fig, use_container_width=True)
     city_to_display = st.selectbox(label="Visualisez les annonces disponibles dans la ville de …",
                                     options=offers_df.city.sort_values().unique(),
-                                    #index= index_city, 
                                     disabled=False, label_visibility="visible")
     display_offer_verbose(offers_df, city_to_display, 10)
     
@@ -154,34 +154,27 @@ def create_px_scatter_mapbox(all_offers_located):
     px.set_mapbox_access_token(open(".mapbox_token").read())
     fig = px.scatter_mapbox(all_offers_located, lat="latitude", lon="longitude",
                             color="sum_of_job_offers", size="sum_of_job_offers",
+                            labels={"sum_of_job_offers" : "Nombre d'offres d'emploi"},
                             custom_data=[all_offers_located['city'], all_offers_located['sum_of_job_offers'], (all_offers_located['sum_of_job_offers']*100)/all_offers_located.shape[0]],
                             center={'lat':46.49388889,'lon':2.60277778},
                             color_continuous_scale=px.colors.sequential.Viridis, 
                             size_max=50, zoom=5, mapbox_style='light')
     fig.update_traces(hovertemplate="<br>".join(["<b>%{customdata[0]}</b>",
         "Nombre d'annonces : %{customdata[1]}",
-        "Pourcentage : %{customdata[2]:.1f} %"]))
+        "Pourcentage : %{customdata[2]:.1f} %"])) 
     fig.update_layout(height=800, width=1000)
-    #fig.update_layout(legend_title_side='left')
     return fig
+
 
 def short_presentation(fig, offers_df):
     col_map, col_df = st.columns(2)
     with col_map:
-        # Create an instance of the plotly_mapbox_events component
         selected_points = plotly_events(fig, click_event=True,override_height=1000) #dommage échelle un peu moins jolie
     with col_df:
-        st.write("  \nSi vous cliquez sur l'une des villes, les annonces s'afficheront ci-dessous.")
-        # Display the captured events
+        if not selected_points:
+            st.write("  \nSi vous cliquez sur l'une des villes, les annonces liées s'afficheront ci-dessous.")
         if selected_points:
-            index_city = selected_points[0]['pointNumber'] # == index all_offers_located de la dernière ville
+            index_city = selected_points[0]['pointNumber']
             city_hovered = offers_df.loc[index_city]['city']
             display_offer_verbose(offers_df, city_hovered, 3)
-            # st.write(selected_points[0]['pointNumber']) # == index all_offers_located de la dernière ville
-            # st.dataframe(all_offers_located.loc[all_offers_located['city'] == city_hovered])
             st.cache_data.clear()
-
-    #st.write(selected_points['pointIndex'])
-    #index_present = all_offers_located.index.isin(selected_points[0]['pointIndex']).any()
-    #st.write(index_present)
-    #st.dataframe(all_offers_located.city.sort_values().unique())
