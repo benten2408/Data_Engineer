@@ -14,7 +14,7 @@ API_BASE_URL = os.environ['API_BASE_URL']
 def fetch_data(endpoint):
     print(f"{API_BASE_URL}/{endpoint}")
     response = requests.get(f"{API_BASE_URL}/{endpoint}")   
-    return pd.DataFrame(response.json(), columns=['sector', 'number_companies'])
+    return pd.DataFrame(response.json(), columns=['sector'])
 
 df_sector = fetch_data("companies/sector")
 df_sector['sector'] = df_sector['sector'].astype(str)
@@ -53,16 +53,14 @@ sector_groups ={
     'culture': ['musique', 'jeux video', 'creative-design-jobs', 'martech'],
 }
 
-def assign_group(group_sector):
+def assign_group(secteur):
     
-    if group_sector is not None:   
+    if secteur is not None:   
         for group, keywords in sector_groups.items():    
             for keyword in keywords:
-                if keyword.lower() in group_sector.lower():
+                if keyword.lower() in secteur.lower():
                     return group 
 
-df_sector['group_sector'] = df_sector['sector'].apply(assign_group)
-sectors_counts = df_sector['group_sector'].value_counts()
+df_sector['secteur'] = df_sector['sector'].apply(assign_group)
+sectors_counts = df_sector['secteur'].value_counts()
 sectors_counts = sectors_counts.rename('Nombre d\'entreprises')
-
-

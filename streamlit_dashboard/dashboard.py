@@ -26,7 +26,6 @@ def run():
 
         def fetch_full_table(endpoint):
             response = requests.get(f"{API_BASE_URL}/{endpoint}", headers=headers)
-            st.write(response)
             return pd.DataFrame(response.json())
 
         st.sidebar.header("Les données derrières ces visualisations")
@@ -43,31 +42,8 @@ def run():
         Pour les voir directement dans notre base de données'''
         st.write(side_bar)
         st.link_button("rendez-vous sur PGAdmin","http://localhost:8888/",type='primary')
-        end = ''' avec les identifiants fournis dans le fichier .env.  \n Sinon pour voir une de ces tables au format brut ici, faites votre choix :'''
+        end = ''' avec les identifiants fournis dans le fichier _.env_.  \n'''
         st.write(end)
-        table_to_display = st.selectbox("Quelle table souhaiteriez-vous voir ?",
-                                        options=['Companies', 'Job Offers', 'JobOffer_Skills', 'Locations', 'Skills', 'Sources', 'Users'],
-                                        placeholder="Job Offers", label_visibility="collapsed")
-        st.write("""🚨⚠️🚧VOIR AVEC NAM car erreur 401 Undocumented	Error: Unauthorized Response body{"detail": "Not authenticated"}""")
-        """
-        match table_to_display:
-            case "Companies":
-                companies = fetch_full_table("/companies")
-                st.dataframe(companies)
-            case "Job Offers":
-                st.dataframe(fetch_full_table("/joboffers"))
-            case "JobOffer_Skills":
-                st.dataframe(fetch_full_table("/joboffer_skills"))
-            case "Locations":
-                st.dataframe(fetch_full_table("/coordinates_full"))
-            case "Skills":
-                st.dataframe(fetch_full_table("/skills"))
-            case "Sources":
-                st.dataframe(fetch_full_table("/sources"))
-            case "Users":
-                st.write("That is our secret")
-                #st.dataframe(get_user_from_postgresql())
-            """
 
 
     titre = "Projet Jobmarket : les offres d'emplois pour Data Engineers en France"
@@ -82,29 +58,59 @@ def run():
     - combien d\'**entreprises** par secteur ont publié des annonces ?   
     - quelles sont les **compétences** les plus demandées ?  
     - quel est le **contrat** majoritairement proposé dans les annonces ?  
-    - quelle est la **zone géographique** avec le plus d\'offres ?  
+    - quelle est la **répartition géographique** de ces offres ?  
       \n _(*) à la date du 24 février 2024_'''
     st.markdown(introduction)
 
 
-    tab0, tab1, tab2, tab3, tab4 = st.tabs(["Les secteurs qui recrutent",
+    tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs(["Les secteurs qui recrutent",
                                             "Les entreprises par secteurs",
                                             "Les compétences recherchées",
                                             "Les contrats proposés",
-                                            "Les villes concernées"])
+                                            "Les villes concernées", "… et les dataframe bruts"])
 
     with tab0:
-        st.header("Quels secteurs recrutent le plus ?")
+        #st.header("Quels secteurs recrutent le plus ?")
 
-        fig1 = px.bar(
-            x=company_cleaning.df_company_sector.group_company, 
-            y=company_cleaning.df_company_sector.nombre_offres,
-            title='Nombre d\'offres par secteur',
-            labels={'x': 'Secteur', 'y': 'Total offres'},
-            color =company_cleaning.df_company_sector.nombre_offres, 
-            color_continuous_scale=px.colors.sequential.Viridis    
-        )
-        st.plotly_chart(fig1)
+        company_cleaning.total_offres_par_secteur
+
+        #
+        def update_pie():
+            """
+            Fonction pour mettre à jour le graphique circulaire en fonction du nombre
+            de secteurs sélectionnés par l'utilisateur.
+            """
+            top_number = st.session_state.input_number
+            # Sélectionner des n premiers secteurs les plus fréquents
+            top_sectors = company_cleaning.total_offres_par_secteur.head(top_number)
+            
+            # Créer le diagramme circulaire avec Plotly Express
+            fig1 = px.pie(
+                names=top_sectors.index,  # Noms des secteurs
+                values=top_sectors.values,  # Nombre d'offres par secteur
+                title=f'Top {top_number} des secteurs qui recrutent',
+                color_discrete_sequence=px.colors.sequential.Viridis
+            )
+
+            st.plotly_chart(fig1)
+
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.write("Vous voulez voir le top")
+
+        with col2:
+            top_sectors = st.number_input("Top", min_value=0, max_value=10, value=3,
+                                        step=1, key="input_number",
+                                        label_visibility="collapsed",
+                                        on_change=update_pie)
+
+        with col3:
+            st.write("des secteurs qui recrutent")
+
+
+        update_pie()
 
     with tab1:
         st.header("Combien d'entreprises par secteur ont publié des annonces ?")
@@ -116,12 +122,12 @@ def run():
             labels={'x': 'SECTEUR', 'y': 'Nombre d\'entreprises'},
             color=sector_cleaning.sectors_counts.values,
             color_continuous_scale=px.colors.sequential.Viridis
-            )
+        )
+        # Affichage du graphique 
         st.plotly_chart(fig2)
 
-
     with tab2:
-        st.header("Quelles sont les compétences les plus demandées ?")
+        #st.header("Quelles sont les compétences les plus demandées ?")
 
         def fetch_data_skills(endpoint):
             response = requests.get(
@@ -138,7 +144,7 @@ def run():
         st.plotly_chart(fig)
 
     with tab3:
-        st.header("Quel est le contrat majoritairement proposé dans les annonces ?")
+        #st.header("Quel est le contrat majoritairement proposé dans les annonces ?")
         col0, col1 = st.columns(2)
         all_contracts = tab3_4.fetch_data_contract("joboffers_contracts")
         
@@ -178,7 +184,7 @@ def run():
             st.plotly_chart(fig2, use_container_height=True, use_container_width=True)
 
     with tab4:
-        st.header("Quelle est la répartition géographique des offres ?")
+        #st.header("Quelle est la répartition géographique des offres ?")
 
         type_presentation = st.radio(horizontal=True,
             label="Comment préférez-vous voir les annonces ?",
@@ -191,3 +197,24 @@ def run():
             tab3_4.tall_presentation(fig, offers_df)
         else:
             tab3_4.short_presentation(fig, offers_df)
+
+    with tab5:
+        table_to_display = st.selectbox("Quelle table souhaiteriez-vous voir ?",
+                                        options=['Companies', 'Job Offers', 'JobOffer_Skills', 'Locations', 'Skills', 'Sources', 'Users'],
+                                        placeholder="Job Offers")
+        match table_to_display:
+            case "Companies":
+                st.dataframe(fetch_full_table("companies"))
+            case "Job Offers":
+                st.dataframe(fetch_full_table("joboffers"))
+            case "JobOffer_Skills":
+                st.dataframe(fetch_full_table("joboffer_skills"))
+            case "Locations":
+                st.dataframe(fetch_full_table("coordinates_full"))
+            case "Skills":
+                st.dataframe(fetch_full_table("skills"))
+            case "Sources":
+                st.dataframe(fetch_full_table("sources"))
+            case "Users":
+                st.write("That is our secret")
+                #st.dataframe(get_user_from_postgresql())

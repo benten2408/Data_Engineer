@@ -198,11 +198,8 @@ async def get_sector():
 	cur = conn.cursor()
 	sector = cur.execute(
 		"""
-            SELECT DISTINCT(sector), COUNT(companyid) AS number_companies
-            FROM companies
-            GROUP BY sector;
-   
-		"""
+            SELECT sector From companies
+   		"""
 	)
 	sector = cur.fetchall()
 
@@ -210,7 +207,8 @@ async def get_sector():
 	cur.close()
 	conn.close()
 
-	return sector         
+	return sector        
+
 
 
 @api.get("/companies/company_sector")

@@ -54,18 +54,17 @@ keyword_groups ={
  }
 
 
-
-def assign_group_(group_company):
+def assign_group_(secteur_):
     
-    if group_company is not None:   
+    if secteur_ is not None:   
         for group, keywords in keyword_groups.items():    
             for keyword in keywords:
-                if keyword.lower() in group_company.lower():
+                if keyword.lower() in secteur_.lower():
                     return group 
 
 
     #Application de la fonction assign_group pour créer une nouvelle colonne group_company
-df_company_sector['group_company'] = df_company_sector['secteur'].apply(assign_group_)
+df_company_sector['secteur_'] = df_company_sector['secteur'].apply(assign_group_)
 
-df_company_sector
-
+total_offres_par_secteur = df_company_sector.groupby('secteur_')['nombre_offres'].sum()
+total_offres_par_secteur = total_offres_par_secteur.sort_values(ascending=False)
