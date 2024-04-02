@@ -7,6 +7,7 @@ import pandas as pd
 import streamlit as st
 import requests
 import os
+import sys
 import plotly.express as px
 from datetime import datetime
 import company_cleaning
@@ -113,7 +114,7 @@ def run():
         update_pie()
 
     with tab1:
-        st.header("Combien d'entreprises par secteur ont publié des annonces ?")
+        #st.header("Combien d'entreprises par secteur ont publié des annonces ?")
         sector_cleaning.sectors_counts
         fig2 = px.bar(
             x=sector_cleaning.sectors_counts.index, 
@@ -216,5 +217,6 @@ def run():
             case "Sources":
                 st.dataframe(fetch_full_table("sources"))
             case "Users":
-                st.write("That is our secret")
+                #st.dataframe(fetch_full_table("users"))
+                st.write("C'est un secret.")
                 #st.dataframe(get_user_from_postgresql())

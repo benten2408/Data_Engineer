@@ -59,7 +59,7 @@ def display_offer_verbose(df, city_to_display,number_of_offer):
     reste_des_annonces = len(to_display) - len(to_display_extract)
     if len(to_display) == 1:
         st.write(f"Voici la seule annonce disponible à **{city_to_display}** :")
-    elif len(to_display_extract) <+ 10:
+    elif len(to_display) <= len(to_display_extract):
         st.write(f"Voici les {len(to_display_extract)} annonces disponibles à **{city_to_display}** :")
     else:
         st.write(f"Voici {len(to_display_extract)} des annonces disponibles à **{city_to_display}** :")
