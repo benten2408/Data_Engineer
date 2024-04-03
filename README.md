@@ -1,4 +1,4 @@
-This the JobMarket project built during the DataEngineering bootcamp 
+This is the repository for the JobMarket project built during the DataEngineering bootcamp 
 at DataScientest from January to April 2024.
 
 To test our newly learned competences, our main goal is to build a complete
