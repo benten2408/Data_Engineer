@@ -74,44 +74,14 @@ def run():
         #st.header("Quels secteurs recrutent le plus ?")
 
         company_cleaning.total_offres_par_secteur
-
-        #
-        def update_pie():
-            """
-            Fonction pour mettre à jour le graphique circulaire en fonction du nombre
-            de secteurs sélectionnés par l'utilisateur.
-            """
-            top_number = st.session_state.input_number
-            # Sélectionner des n premiers secteurs les plus fréquents
-            top_sectors = company_cleaning.total_offres_par_secteur.head(top_number)
-            
-            # Créer le diagramme circulaire avec Plotly Express
-            fig1 = px.pie(
-                names=top_sectors.index,  # Noms des secteurs
-                values=top_sectors.values,  # Nombre d'offres par secteur
-                title=f'Top {top_number} des secteurs qui recrutent',
-                color_discrete_sequence=px.colors.sequential.Viridis
-            )
-
-            st.plotly_chart(fig1)
-
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            st.write("Vous voulez voir le top")
-
-        with col2:
-            top_sectors = st.number_input("Top", min_value=0, max_value=10, value=3,
-                                        step=1, key="input_number",
-                                        label_visibility="collapsed",
-                                        on_change=update_pie)
-
-        with col3:
-            st.write("des secteurs qui recrutent")
-
-
-        update_pie()
+        top_sectors = company_cleaning.total_offres_par_secteur.head(10)
+        fig1 = px.pie(
+            names=top_sectors.index,  # Noms des secteurs
+            values=top_sectors.values,  # Nombre d'offres par secteur
+            title=f'Top 10 des secteurs qui recrutent',
+            color_discrete_sequence=px.colors.sequential.Viridis
+        )
+        st.plotly_chart(fig1)
 
     with tab1:
         #st.header("Combien d'entreprises par secteur ont publié des annonces ?")
@@ -124,12 +94,10 @@ def run():
             color=sector_cleaning.sectors_counts.values,
             color_continuous_scale=px.colors.sequential.Viridis
         )
-        # Affichage du graphique 
         st.plotly_chart(fig2)
 
     with tab2:
         #st.header("Quelles sont les compétences les plus demandées ?")
-
         def fetch_data_skills(endpoint):
             response = requests.get(
                 f"{API_BASE_URL}/{endpoint}",
