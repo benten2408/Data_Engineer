@@ -31,7 +31,7 @@ def run():
 
         st.sidebar.header("Les données derrières ces visualisations")
         side_bar = f'''
-        Comme vous pourrez le lire dans notre [rapport🚨 version pdf à mettre avant soutenance⚠️](https://docs.google.com/document/d/1RdEme_BMk8fh_ZRzwjCSCIh9AFD4mGTBaRY09J685dA/edit?usp=sharing), nous avons créé 7 tables : 
+        Comme vous pourrez le lire dans notre [rapport](https://drive.google.com/file/d/1-CGRgKLvHO1lEAQwkvEdz_OBPvjpsJOy/view?usp=sharing), nous avons créé 7 tables : 
         - Companies
         - Job Offers
         - JobOffer_Skills
