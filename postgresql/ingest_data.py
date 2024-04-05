@@ -69,7 +69,6 @@ def get_or_create_company(cur, company_data):
         return cur.fetchone()[0]
 
 def get_or_create_source(cur, source_name):
-    #print(source_name, type(source_name))
     cur.execute("SELECT sourceId FROM Sources WHERE sourceName = %s;", (source_name,))
     result = cur.fetchone()
     if result:
@@ -103,9 +102,12 @@ def concat_format_data():
 
 
 def ingest_joboffers_query(cur):
-	"""Itération sur chaque ligne du dataframe pour intégrer chaque annonce à JobOffers
+	"""
+     Itération sur chaque ligne du dataframe pour intégrer chaque annonce à JobOffers
 	"""
 	df = concat_format_data()
+	df.drop_duplicates(subset=['title', 'company', 'description'], inplace=True)
+	df.reset_index(drop=True, inplace=True)
 	skills_list = get_skills_list()
       
 	for _, row in df.iterrows():
@@ -141,12 +143,10 @@ def get_location_coordinates(address):
     try:
         response = requests.get(url).json()
         if response["features"][0]:
-            #f"response {response}"
             longitude = response["features"][0]["geometry"]["coordinates"][0]
             latitude = response["features"][0]["geometry"]["coordinates"][1]
             city = response["features"][0]["properties"]["city"]
             postal_code = response["features"][0]["properties"]["postcode"]
-            #f"location {address}  latitude {latitude}  longitude {longitude}"
             return (latitude, longitude, city, postal_code)
     except:
         f"Pour information, les coordonnées de l'adresse « {address} » n'ont pas pu être récupérées"
@@ -158,13 +158,10 @@ def create_csv_coordinates():
 	location = pd.DataFrame(df["location"].unique(), columns=["location"])
 	location = location.dropna()
 	location["latitude"], location["longitude"], location["city"], location["postal_code"] = zip(*location["location"].apply(lambda x : get_location_coordinates(x))) #axis = 0
-	#location["latitude"], location["longitude"], location["city"], location["postal_code"] = zip(*location["location"].apply(lambda x: (48.60, 7.74, 67302, "Schiltigheim") if x == "Schiltigheim, Strasbourg-Campagne" else (None, None, None, None)))
 	location.to_csv(os.path.join(DATA_TO_INGEST_FOLDER, 'locations.csv'), index=False)
 
 
 def get_or_create_location(cur, location_data):
-    #print(location_data)
-    #print(type(location_data))
     cur.execute("SELECT location FROM Locations WHERE location = %s;", (str(location_data["location"]),))
     result = cur.fetchone()
     if result is None:
