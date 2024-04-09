@@ -7,6 +7,7 @@ import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from typing import List, Optional
 
+
 from app.auth_utils import create_access_token, verify_password
 
 DATABASE = os.environ['DATABASE']
