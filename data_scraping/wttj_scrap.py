@@ -4,6 +4,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
