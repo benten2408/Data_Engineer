@@ -7,7 +7,6 @@ class Company:
         self.turnover = None
         self.mean_age = None
 
-
 class JobOffer:
     def __init__(self):
         self.title = None
