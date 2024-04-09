@@ -40,7 +40,6 @@ QUERY_PARAMETERS = "&title_only="
 KEYWORDS = "data%20engineer"
 MAX_OLD_DAYS = str(30)
 
-
 def create_url():
     """
     Strings together search parameters to create functionnal url
