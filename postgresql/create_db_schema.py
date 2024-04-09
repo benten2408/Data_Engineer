@@ -8,7 +8,6 @@ def create_database_query(cur):
     print(f"Previous database '{DATABASE}' successfully dropped with force.")
     cur.execute(f"CREATE DATABASE {DATABASE};")
 
-
 def create_schema_query(cur):
 
     commands = (
