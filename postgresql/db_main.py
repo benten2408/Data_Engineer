@@ -1,6 +1,7 @@
 import argparse
 from postgresql.db_manager import DatabaseManager
 
+
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 
