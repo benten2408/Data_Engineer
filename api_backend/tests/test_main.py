@@ -63,6 +63,7 @@ async def test_secure_endpoint_unauthorized(mock_get_current_user):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+
 @pytest.mark.asyncio
 async def test_secure_endpoint_authorized():
     async with AsyncClient(app=api, base_url="http://test") as ac:
