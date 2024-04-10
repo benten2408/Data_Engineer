@@ -1,4 +1,4 @@
-,0
+, 0
 0,http://api.adzuna.com/v1/api/jobs/fr/search/1?app_id=37fe08af&app_key=17c1369ea8fb68bc48f834aebc0bec53&results_per_page=25&title_only=data%20engineer&max_days_old=30&content-type=application/json
 1,http://api.adzuna.com/v1/api/jobs/fr/search/2?app_id=37fe08af&app_key=17c1369ea8fb68bc48f834aebc0bec53&results_per_page=25&title_only=data%20engineer&max_days_old=30&content-type=application/json
 2,http://api.adzuna.com/v1/api/jobs/fr/search/3?app_id=37fe08af&app_key=17c1369ea8fb68bc48f834aebc0bec53&results_per_page=25&title_only=data%20engineer&max_days_old=30&content-type=application/json
