@@ -5,6 +5,7 @@ from env_config import DATABASE, POSTGRES_USER, POSTGRES_PASSWORD, HOST, PORT
 from postgresql.create_db_schema import create_database_query, create_schema_query
 from postgresql.ingest_data import ingest_joboffers_query, ingest_skills_query, location_process, create_user
 
+
 class DatabaseManager:
 	def __init__(self, default=True):
 		self.db_params = {
