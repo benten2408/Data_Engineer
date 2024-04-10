@@ -6,8 +6,6 @@ import pandas as pd
 import requests
 
 
-
-
 API_BASE_URL = os.environ['API_BASE_URL']
 
 
